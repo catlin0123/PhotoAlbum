@@ -11,6 +11,7 @@
 #include <QPlainTextEdit>
 #include <QPixmap>
 #include <QtDebug>
+#include "pictureedits.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -41,14 +42,10 @@ private slots:
     void normalSize();
     void fitToWindow();
     void about();
-    void brighten();
-    void contrast();
-    void edge();
-    void gamma();
-    void negate();
-    void rotate();
-    void sharpen();
-    void smooth();
+    void balance();
+//    void rotate();
+//    void resize();
+//    void crop();
 
 private:
     Ui::MainWindow *ui;
@@ -73,24 +70,20 @@ private:
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
     QAction *aboutAct;
-    QAction *aboutQtAct;
-    QAction *brightenAct;
-    QAction *contrastAct;
-    QAction *edgeAct;
-    QAction *gammaAct;
-    QAction *negateAct;
-    QAction *rotateAct;
-    QAction *sharpenAct;
-    QAction *smoothAct;
+    QAction *balanceAct;
+//    QAction *rotateAct;
+//    QAction *resizeAct;
+//    QAction *cropAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;
-    QMenu *editMenu;
     QMenu *helpMenu;
+    QMenu *imageMenu;
 
     QToolBar *fileToolBar;
-    QToolBar *editToolBar;
     QToolBar *viewToolBar;
+
+    pictureedits *balanceWidget;
 };
 
 #endif // MAINWINDOW_H

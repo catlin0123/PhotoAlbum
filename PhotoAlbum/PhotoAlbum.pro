@@ -14,10 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    xmlparser.cpp
+    xmlparser.cpp \
+    pictureedits.cpp
 
 HEADERS  += mainwindow.h \
     xmlparser.h \
-    Photo.h
+    Photo.h \
+    pictureedits.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    pictureedits.ui

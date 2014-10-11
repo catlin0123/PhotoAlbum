@@ -15,6 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpinBox>
@@ -35,10 +36,9 @@ public:
     QLabel *label_4;
     QLabel *label_5;
     QLabel *label_6;
-    QLabel *label_7;
     QSlider *gammaSlider;
-    QSlider *edgeSlider;
     QRadioButton *radioButton;
+    QPushButton *edgeButton;
 
     void setupUi(QWidget *pictureedits)
     {
@@ -48,18 +48,24 @@ public:
         smoothSpinBox = new QSpinBox(pictureedits);
         smoothSpinBox->setObjectName(QStringLiteral("smoothSpinBox"));
         smoothSpinBox->setGeometry(QRect(120, 190, 42, 22));
+        smoothSpinBox->setSingleStep(10);
         sharpenSpinBox = new QSpinBox(pictureedits);
         sharpenSpinBox->setObjectName(QStringLiteral("sharpenSpinBox"));
         sharpenSpinBox->setGeometry(QRect(120, 220, 42, 22));
+        sharpenSpinBox->setSingleStep(10);
         brightnessSlider = new QSlider(pictureedits);
         brightnessSlider->setObjectName(QStringLiteral("brightnessSlider"));
         brightnessSlider->setGeometry(QRect(120, 30, 160, 19));
-        brightnessSlider->setMinimum(-100);
-        brightnessSlider->setMaximum(100);
+        brightnessSlider->setMinimum(-12);
+        brightnessSlider->setMaximum(12);
+        brightnessSlider->setPageStep(1);
         brightnessSlider->setOrientation(Qt::Horizontal);
         contrastSlider = new QSlider(pictureedits);
         contrastSlider->setObjectName(QStringLiteral("contrastSlider"));
         contrastSlider->setGeometry(QRect(120, 60, 160, 19));
+        contrastSlider->setMinimum(-12);
+        contrastSlider->setMaximum(12);
+        contrastSlider->setPageStep(1);
         contrastSlider->setOrientation(Qt::Horizontal);
         label = new QLabel(pictureedits);
         label->setObjectName(QStringLiteral("label"));
@@ -79,20 +85,19 @@ public:
         label_6 = new QLabel(pictureedits);
         label_6->setObjectName(QStringLiteral("label_6"));
         label_6->setGeometry(QRect(30, 90, 46, 13));
-        label_7 = new QLabel(pictureedits);
-        label_7->setObjectName(QStringLiteral("label_7"));
-        label_7->setGeometry(QRect(30, 120, 46, 13));
         gammaSlider = new QSlider(pictureedits);
         gammaSlider->setObjectName(QStringLiteral("gammaSlider"));
         gammaSlider->setGeometry(QRect(120, 90, 160, 19));
+        gammaSlider->setMinimum(-12);
+        gammaSlider->setMaximum(12);
+        gammaSlider->setPageStep(1);
         gammaSlider->setOrientation(Qt::Horizontal);
-        edgeSlider = new QSlider(pictureedits);
-        edgeSlider->setObjectName(QStringLiteral("edgeSlider"));
-        edgeSlider->setGeometry(QRect(120, 120, 160, 19));
-        edgeSlider->setOrientation(Qt::Horizontal);
         radioButton = new QRadioButton(pictureedits);
         radioButton->setObjectName(QStringLiteral("radioButton"));
         radioButton->setGeometry(QRect(120, 160, 82, 17));
+        edgeButton = new QPushButton(pictureedits);
+        edgeButton->setObjectName(QStringLiteral("edgeButton"));
+        edgeButton->setGeometry(QRect(30, 120, 75, 23));
 
         retranslateUi(pictureedits);
 
@@ -111,8 +116,8 @@ public:
         label_4->setText(QApplication::translate("pictureedits", "Smooth", 0));
         label_5->setText(QApplication::translate("pictureedits", "Sharpen", 0));
         label_6->setText(QApplication::translate("pictureedits", "Gamma", 0));
-        label_7->setText(QApplication::translate("pictureedits", "Edge", 0));
         radioButton->setText(QString());
+        edgeButton->setText(QApplication::translate("pictureedits", "Edge", 0));
     } // retranslateUi
 
 };

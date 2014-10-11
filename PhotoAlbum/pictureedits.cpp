@@ -12,69 +12,46 @@ pictureedits::pictureedits(QImage *image, QLabel *imageLabel) : ui(new Ui::pictu
     setWindowTitle(tr("Balance"));
 }
 
-//do we need /any/ of this? (im pretty sure no.)
 void pictureedits::createActions()
 {
-    brightenAct = new QAction(tr("&Brighten"), this);
-//    brightenAct->setEnabled(false);
-    brightenAct->setStatusTip(tr("Brigten Image"));
     connect(ui->brightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(brighten(int)));
-
-    contrastAct = new QAction(tr("Contrast"), this);
-    contrastAct->setStatusTip(tr("Contrast Image"));
     connect(ui->contrastSlider, SIGNAL(valueChanged(int)), this, SLOT(contrast(int)));
-
-    edgeAct = new QAction(tr("Edge"), this);
-    edgeAct->setStatusTip(tr("Edge Image (what does that mean even)"));
-//    connect(edgeAct, SIGNAL(triggered()), this, SLOT(edge());
-
-    gammaAct = new QAction(tr("&Gamma"), this);
-    gammaAct->setStatusTip(tr("Gamma Image ??"));
+    connect(ui->edgeButton, SIGNAL(clicked()), this, SLOT(edge()));
     connect(ui->gammaSlider, SIGNAL(valueChanged(int)), this, SLOT(gamma(int)));
-
-    negateAct = new QAction(tr("Negate"), this);
-    negateAct->setStatusTip(tr("Negate Image"));
     connect(ui->radioButton, SIGNAL(clicked()), this, SLOT(negate()));
-
-    rotateAct = new QAction(tr("Rotate"), this);
-    rotateAct->setStatusTip(tr("Rotate Image"));
-    connect(rotateAct, SIGNAL(triggered()), this, SLOT(rotate()));
-
-    sharpenAct = new QAction(tr("Sharpen"), this);
-    sharpenAct->setStatusTip(tr("Sharpen Image"));
-    connect(ui->sharpenSpinBox, SIGNAL(triggered()), this, SLOT(sharpen(int)));
-
-    smoothAct = new QAction(tr("Smooth"), this);
-    smoothAct->setStatusTip(tr("Smooth Image"));
-    connect(smoothAct, SIGNAL(triggered()), this, SLOT(smooth(int)));
+    connect(ui->sharpenSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sharpen(int)));
+    connect(ui->smoothSpinBox, SIGNAL(valueChanged(int)), this, SLOT(smooth(int)));
 }
 
-
+//this is wrong somehow.
 void pictureedits::brighten(int i)
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
 
     int val;
-    if(i>1) val = 1;
-    if(i<0) val = -1;
-    if(i==0) val = 0;
 
-    // brighten the image by 64 intensity levels (25% of intensity range)
+    //this seems backwards
+    if(brightenPrevVal > i) val = -10;
+    if(brightenPrevVal < i) val = 10;
+    brightenPrevVal = i;
+
+    // brighten the image by 30 intensity levels (25% of intensity range)
+    //this goes the right way now? but still does the negate thing horrifically.
        for (int x = 0; x < picImage->width(); x++)
        {
            for (int y = 0; y < picImage->height(); y++)
            {
                QRgb p = picImage->pixel(x, y);
                int r = qRed(p) + val;
-               if (r > 255) r = 255;
+               if (r < 0) r = 0; else if (r > 255) r = 255;
                int g = qGreen(p) + val;
-               if (g > 255) g = 255;
+               if (g < 0) g = 0; else if (g > 255) g = 255;
                int b = qBlue(p) + val;
-               if (b > 255) b = 255;
+               if (b < 0) b = 0; else if (b > 255) b = 255;
                picImage->setPixel(x, y, qRgb(r, g, b));
            }
        }
@@ -86,11 +63,16 @@ void pictureedits::brighten(int i)
 
 void pictureedits::contrast(int i)
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
+
+    double val;
+    if(contrastPrevVal > i) val = 1/2; //so. that wasn't right.
+    if(contrastPrevVal < i) val = 2;
+    contrastPrevVal = i;
 
     // contrast stretch image between intensity levels 64 and 192
     for(int x = 0; x < picImage->width(); x++ )
@@ -98,11 +80,11 @@ void pictureedits::contrast(int i)
         for (int y = 0; y < picImage->height(); y++)
         {
             QRgb p = picImage->pixel(x, y);
-            int r = (qRed(p) - i) * 2;
+            int r = (qRed(p) - 10) * val; //do i have to divide by 2 to get it back ish?
             if (r < 0) r = 0; else if (r > 255) r = 255;
-            int g = (qGreen(p) - i) * 2;
+            int g = (qGreen(p) - 10) * val;
             if (g < 0) g = 0; else if (g > 255) g = 255;
-            int b = (qBlue(p) - i) * 2;
+            int b = (qBlue(p) - 10) * val;
             if (b < 0) b = 0; else if (b >255) b = 255;
             picImage->setPixel(x, y, qRgb(r, g, b));
         }
@@ -115,7 +97,7 @@ void pictureedits::contrast(int i)
 
 void pictureedits::edge()
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
@@ -143,14 +125,19 @@ void pictureedits::edge()
 
 void pictureedits::gamma(int i)
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
 
+    double val;
+    if(gammaPrevVal > i) val = 1.5;
+    if(gammaPrevVal < i) val = 2/3; //that also is not right. at. all.
+    gammaPrevVal = i;
+
     // alter image gamma
-        double gamma = 1.5;
+        double gamma = val;
         for(int x = 0; x < picImage->width(); x++)
         {
             for(int y = 0; y < picImage->height(); y++)
@@ -170,7 +157,7 @@ void pictureedits::gamma(int i)
 
 void pictureedits::negate()
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
@@ -187,37 +174,9 @@ void pictureedits::negate()
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
-void pictureedits::rotate()
-{
-    if(picImage->isNull()) //keeping this for now.
-    {
-        qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
-        exit(-2);
-    }
-
-    qDebug() << "This should eventually rotate the image, but.";
-
-//    QPixmap pix(picImage);
-
-    // create a Qtransform for rotation (can also use for translation and scaling)
-//    QTransform *t = new QTransform;
-
-    // rotate pixmap by 45 degrees
-//    QPixmap rpix(image.transformed(t->rotate(45)));
-
-    // scale to original image dimensions, retaining aspect ratio
-//    QPixmap spix(rpix.scaled(image.width(), image.height(), Qt::KeepAspectRatio));
-
-    // store in label's pixmap
-//    imageLabel->setPixmap(spix);
-
-    // more concisely, can collapse the previous three lines into one:
-//    picImageLabel->setPixmap(pix.transformed(t->rotate( 45 )).scaled(pix.width(), pix.height(), Qt::KeepAspectRatio));
-}
-
 void pictureedits::sharpen(int i)
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
@@ -227,15 +186,16 @@ void pictureedits::sharpen(int i)
     //  0 -1  0
     // -1  5 -1
     //  0 -1  0
+    int sharpenVal = i;
     QImage sharpImage(*picImage);
     for(int x = 1; x < picImage->width() - 1; x++)
     {
         for(int y = 1; y < picImage->height() - 1; y++)
         {
             QRgb p = picImage->pixel(x, y);
-            int r = 5 * qRed(p);
-            int g = 5 * qGreen(p);
-            int b = 5 * qBlue(p);
+            int r = sharpenVal * qRed(p);
+            int g = sharpenVal * qGreen(p);
+            int b = sharpenVal * qBlue(p);
             p = picImage->pixel(x - 1, y);
             r -= qRed(p);
             g -= qGreen(p);
@@ -266,13 +226,17 @@ void pictureedits::sharpen(int i)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+//i dont know that this does anything.
 void pictureedits::smooth(int i)
 {
-    if(picImage->isNull()) //keeping this for now.
+    if(picImage->isNull())
     {
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
+
+    if(i==0) i = 10;
+    i = i/10;
 
     // smooth the image prior to display
     QImage smoothImage(*picImage);
@@ -291,7 +255,7 @@ void pictureedits::smooth(int i)
                     b += qBlue(p);
                 }
             }
-            smoothImage.setPixel(x, y, qRgb(r / 9, g / 9, b / 9));
+            smoothImage.setPixel(x, y, qRgb(r / (9*i), g / (9*i), b / (9*i)));
         }
     }
 

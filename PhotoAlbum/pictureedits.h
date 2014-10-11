@@ -31,13 +31,12 @@ public:
     explicit pictureedits(QImage *image, QLabel *imageLabel);
     ~pictureedits();
 
-public slots:
+private slots: //was public and it was fine, but.
     void brighten(int);
     void contrast(int);
     void edge();
     void gamma(int);
     void negate();
-    void rotate();
     void sharpen(int);
     void smooth(int);
 
@@ -46,17 +45,24 @@ private:
 
     void createActions();
 
-    QAction *brightenAct;
-    QAction *contrastAct;
-    QAction *edgeAct;
-    QAction *gammaAct;
-    QAction *negateAct;
-    QAction *rotateAct;
-    QAction *sharpenAct;
-    QAction *smoothAct;
+//    QAction *brightenAct;
+//    QAction *contrastAct;
+//    QAction *edgeAct;
+//    QAction *gammaAct;
+//    QAction *negateAct;
+//    QAction *rotateAct;
+//    QAction *sharpenAct;
+//    QAction *smoothAct;
 
     QLabel *picImageLabel;
     QImage *picImage;
+
+    int brightenPrevVal = 0;
+    int gammaPrevVal = 0;
+    int contrastPrevVal = 0;
+    int sharpenPrevVal = 0;
+    int smoothPrevVal = 0;
+
 };
 
 #endif // PICTUREEDITS_H

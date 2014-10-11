@@ -11,7 +11,10 @@
 #include <QPlainTextEdit>
 #include <QPixmap>
 #include <QtDebug>
+#include <QRubberBand>
 #include "pictureedits.h"
+#include "resizewindow.h"
+#include "cropfunction.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -21,6 +24,7 @@ class QScrollArea;
 class QScrollBar;
 class QPlainTextEdit;
 class QPixmap;
+class QRubberBand;
 QT_END_NAMESPACE
 
 namespace Ui {
@@ -35,6 +39,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    //is this the right place?
+    void mousePressEvent( QMouseEvent *event );
+    void mouseMoveEvent( QMouseEvent *event );
+    void mouseReleaseEvent( QMouseEvent *event );
+//    void keyPressEvent( QKeyEvent *event );
+
 private slots:
     void open();
     void zoomIn();
@@ -43,9 +53,9 @@ private slots:
     void fitToWindow();
     void about();
     void balance();
-//    void rotate();
-//    void resize();
-//    void crop();
+    void rotate();
+    void openResize();
+    void crop();
 
 private:
     Ui::MainWindow *ui;
@@ -71,9 +81,9 @@ private:
     QAction *fitToWindowAct;
     QAction *aboutAct;
     QAction *balanceAct;
-//    QAction *rotateAct;
-//    QAction *resizeAct;
-//    QAction *cropAct;
+    QAction *rotateAct;
+    QAction *resizeAct;
+    QAction *cropAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;
@@ -84,6 +94,12 @@ private:
     QToolBar *viewToolBar;
 
     pictureedits *balanceWidget;
+    ResizeWindow *resizeDialog;
+//    CropFunction *cropFunction;
+
+    QRubberBand *rubberBand;
+    QPoint origin;
+    bool validCrop = false;
 };
 
 #endif // MAINWINDOW_H

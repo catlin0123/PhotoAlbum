@@ -25,6 +25,9 @@
    <property name="suffix">
     <string>%</string>
    </property>
+   <property name="singleStep">
+    <number>10</number>
+   </property>
   </widget>
   <widget class="QSpinBox" name="sharpenSpinBox">
    <property name="geometry">
@@ -41,6 +44,9 @@
    <property name="prefix">
     <string/>
    </property>
+   <property name="singleStep">
+    <number>10</number>
+   </property>
   </widget>
   <widget class="QSlider" name="brightnessSlider">
    <property name="geometry">
@@ -52,10 +58,13 @@
     </rect>
    </property>
    <property name="minimum">
-    <number>-100</number>
+    <number>-12</number>
    </property>
    <property name="maximum">
-    <number>100</number>
+    <number>12</number>
+   </property>
+   <property name="pageStep">
+    <number>1</number>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -69,6 +78,15 @@
      <width>160</width>
      <height>19</height>
     </rect>
+   </property>
+   <property name="minimum">
+    <number>-12</number>
+   </property>
+   <property name="maximum">
+    <number>12</number>
+   </property>
+   <property name="pageStep">
+    <number>1</number>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -152,19 +170,6 @@
     <string>Gamma</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_7">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>120</y>
-     <width>46</width>
-     <height>13</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Edge</string>
-   </property>
-  </widget>
   <widget class="QSlider" name="gammaSlider">
    <property name="geometry">
     <rect>
@@ -174,18 +179,14 @@
      <height>19</height>
     </rect>
    </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
+   <property name="minimum">
+    <number>-12</number>
    </property>
-  </widget>
-  <widget class="QSlider" name="edgeSlider">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>120</y>
-     <width>160</width>
-     <height>19</height>
-    </rect>
+   <property name="maximum">
+    <number>12</number>
+   </property>
+   <property name="pageStep">
+    <number>1</number>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -202,6 +203,19 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="edgeButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>120</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Edge</string>
    </property>
   </widget>
  </widget>

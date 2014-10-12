@@ -14,10 +14,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    xmlparser.cpp
+    xmlparser.cpp \
+    pictureedits.cpp \
+    resizewindow.cpp \
+    cropfunction.cpp
+
+#RESOURCES = mainwindow.qrc #possibly. but we dont have one, so.
 
 HEADERS  += mainwindow.h \
     xmlparser.h \
-    Photo.h
+    Photo.h \
+    pictureedits.h \
+    resizewindow.h \
+    cropfunction.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    pictureedits.ui \
+    resizewindow.ui

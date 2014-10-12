@@ -6,67 +6,45 @@ Parser::Parser()
 
 }
 
-list<Photo> Parser::GetPhotoAlbums(QFile *XMLfile)
+vector<Photo> Parser::GetPhotoAlbums(QFile *XMLfile)
 {
     XMLfile->open(QIODevice::ReadOnly);
     QDomDocument doc("mydocument");
     doc.setContent(XMLfile);
     XMLfile->close();
 
-    list<Photo> photoList = list<Photo>();
+    vector<Photo> photoList = vector<Photo>();
 
     QDomElement docElem = doc.documentElement();
     for (QDomNode n = docElem.firstChild(); !n.isNull(); n = n.nextSibling())
     {
-        QDomElement e = n.toElement(); //photo
+        QDomElement e = n.toElement(); //album
         Photo photo;
         for (QDomNode m = e.firstChild(); !m.isNull(); m = m.nextSibling())
         {
             if (!e.isNull())
             {
 
-                QDomElement f = n.toElement();
+                QDomElement f = m.toElement();
                 if (!f.isNull())
                 {
-                    if (f.tagName() == "filename")
+                    QString tag = f.tagName();
+                    if (tag == "filename")
                     {
                         photo.FileName = f.text();
                     }
-                    else if(f.tagName() == "date")
+                    else if(tag == "date")
                     {
-                        photo.Date = ConvertTextToDate(f.text());
+                        QString text = f.text();
+                        photo.Date = QDate::fromString(text, "MMMM d, yyyy");
                     }
-                    else if(f.tagName() == "location")
+                    else if(tag == "location")
                     {
                         photo.Location = f.text();
                     }
-                    else if(f.tagName() == "description")
+                    else if(tag == "description")
                     {
                         photo.Description = f.text();
-                    }
-                    else if(f.tagName() == "brightness")
-                    {
-                        photo.Brightness = f.text().toInt();
-                    }
-                    else if(f.tagName() == "contrast")
-                    {
-                        photo.Contrast = f.text().toInt();
-                    }
-                    else if(f.tagName() == "x_crop_min")
-                    {
-                        photo.StartCropX = f.text().toInt();
-                    }
-                    else if(f.tagName() == "y_crop_min")
-                    {
-                        photo.StartCropY = f.text().toInt();
-                    }
-                    else if(f.tagName() == "x_crop_max")
-                    {
-                        photo.EndCropX = f.text().toInt();
-                    }
-                    else if(f.tagName() == "y_crop_max")
-                    {
-                        photo.EndCropY = f.text().toInt();
                     }
                 }
             }
@@ -77,13 +55,37 @@ list<Photo> Parser::GetPhotoAlbums(QFile *XMLfile)
     return photoList;
 }
 
-QFile* Parser::ConvertList(list<Photo> *list)
+QString Parser::ConvertList(vector<Photo> photos)
 {
-    return new QFile();
-}
+    QString string;
+    QDate date;
+    string += "<album>\n";
+    for(unsigned int i = 0; i < photos.size(); i++)
+    {
+        Photo a = photos[i];
+        if (a.FileName != "")
+        {
+            string += "<photo>\n";
+            string += "<filename>" + a.FileName + "</filename>\n";
 
-QDate Parser::ConvertTextToDate(QString text)
-{
-    QDate d = QDate();
-    return d;
+            if (a.Date != date)
+            {
+                string += "<date>" ;
+                string += a.Date.toString("MMMM d, yyyy");
+                string += "</date>\n";
+            }
+            if (a.Description != "")
+            {
+                string += "<description>" + a.Description + "</description>\n";
+            }
+            if (a.Location != "")
+            {
+                string +=  "<location>" + a.Location + "</location>\n";
+            }
+            string +=  "</photo>\n";
+
+        }
+    }
+    string += "</album>\n";
+    return string;
 }

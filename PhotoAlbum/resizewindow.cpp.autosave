@@ -18,16 +18,15 @@ ResizeWindow::ResizeWindow(QImage *image, QLabel *imageLabel) ://, QWidget *pare
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(resetImageSize()));
 
-//    connect(ui->testButton, SIGNAL(clicked()), this, SLOT(resetImageSize()));
     setWindowTitle(tr("Resize Image"));
 }
 
 void ResizeWindow::resetImageSize()
 {
-//    resizeImage->width() = ui->widthSpinBox->value();
-//    resizeImage->height() = ui->heightSpinBox->value();
+    resizeImage->width() = ui->widthSpinBox->value();
+    resizeImage->height() = ui->heightSpinBox->value();
 
-//    resizeImageLabel->setPixmap(QPixmap::fromImage(*resizeImage));
+    resizeImageLabel->setPixmap(QPixmap::fromImage(*resizeImage));
 
 //    delete ui; //is this. okay. is this okay.
 }

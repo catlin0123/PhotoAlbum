@@ -9,14 +9,8 @@ using namespace std;
 
 struct Photo
 {
-    QString FileName;
+    QString FileName = "";
     QDate  Date;
-    QString Location;
-    QString Description;
-    int Brightness = -1;
-    int Contrast = -1;
-    int StartCropX = -1;
-    int StartCropY = -1;
-    int EndCropX = -1;
-    int EndCropY = -1;
+    QString Location = "";
+    QString Description = "";
 };

@@ -2,18 +2,17 @@
 #define XMLPARSER_H
 
 #include <QtXml>
-#include <list>
+#include <vector>
+#include <QString>
 #include "Photo.h"
-
 using namespace std;
 
 class Parser
 {
     public:
         Parser();
-        list<Photo> GetPhotoAlbums(QFile *XMLfile);
-        QFile* ConvertList(list<Photo> *list);
-        QDate ConvertTextToDate(QString text);
+        vector<Photo> GetPhotoAlbums(QFile *XMLfile);
+        QString ConvertList(vector<Photo> list);
 };
 
 #endif // XMLPARSER_H

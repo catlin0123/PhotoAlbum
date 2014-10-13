@@ -18,6 +18,7 @@
 #include "xmlparser.h"
 #include "descriptionwindow.h"
 #include "Photo.h"
+#include <QLayout>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -55,7 +56,7 @@ private slots:
     void save();
     void saveAs();
     void close();
-
+    void updateDescription();
     void addPhoto();
     void deletePhoto();
     void editDescription();
@@ -85,12 +86,16 @@ private:
     void updateActions();
     void enableImageEdits(bool enable);
     void updateMoveEnables();
+    void setDescription();
 //    void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
     QLabel *imageLabel;
     QImage image;
     QScrollArea *scrollArea;
+    QLabel *descriptionLabel;
+    QVBoxLayout *layout;
+    QWidget *widget;
     double scaleFactor;
 
     QAction *newAct;

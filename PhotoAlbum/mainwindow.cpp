@@ -22,7 +22,16 @@ MainWindow::MainWindow(QWidget *parent) :
     scrollArea = new QScrollArea;
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
-    setCentralWidget(scrollArea);
+
+    descriptionLabel = new QLabel;
+    descriptionLabel->setMinimumHeight(40);
+    descriptionLabel->setText("Description:\nLocation:\nDate:");
+
+    widget = new QWidget;
+    layout = new QVBoxLayout(widget);
+    layout->addWidget(scrollArea);
+    layout->addWidget(descriptionLabel);
+    setCentralWidget(widget);
 
     createActions();
     createMenus();
@@ -31,10 +40,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->balanceWidget = new pictureedits(&image, imageLabel);
     this->resizeDialog = new ResizeWindow(&image, imageLabel);
-//    this->descriptionDialog = new DescriptionWindow(text, text);
+    this->descriptionDialog = new DescriptionWindow();
+    connect(descriptionDialog, SIGNAL(descriptionChanged()), this, SLOT(updateDescription()));
 
     setWindowTitle(tr("Photo Album"));
-    resize(500, 400);
+    resize(800, 600);
 
     this->ui->mainToolBar->hide();
 }
@@ -64,9 +74,12 @@ void MainWindow::newAlbum()
     newFile = true;
     imageLabel->setPixmap(QPixmap::fromImage(image));
     imageLabel->resize(image.width(), image.height());
+    setDescription();
     enableImageEdits(false);
     deletePhotoAct->setEnabled(false);
     updateMoveEnables();
+    saveAct->setEnabled(false);
+    saveAsAct->setEnabled(false);
 }
 
 void MainWindow::open()
@@ -106,6 +119,7 @@ void MainWindow::open()
             imageLabel->resize(image.width(), image.height());
             enableImageEdits(true);
             deletePhotoAct->setEnabled(true);
+            editDescriptionAct->setEnabled(true);
         }
         else
         {
@@ -123,6 +137,9 @@ void MainWindow::open()
         updateActions();
     }
     updateMoveEnables();
+    setDescription();
+    saveAct->setEnabled(false);
+    saveAsAct->setEnabled(false);
 }
 
 void MainWindow::save()
@@ -172,10 +189,6 @@ void MainWindow::saveAs()
 
 void MainWindow::close()
 {
-    if (pictureChanged)
-    {
-        image.save(album[currentPicture].FileName);
-    }
     if (albumChanged)
     {
         int response = QMessageBox::information(this, tr("Save"),
@@ -186,6 +199,10 @@ void MainWindow::close()
         {
             case QMessageBox::Save :
             {
+                if (pictureChanged)
+                {
+                    image.save(album[currentPicture].FileName);
+                }
                 //save the album and close the program
                 QFile file;
                 if (newFile)
@@ -224,7 +241,10 @@ void MainWindow::close()
         }
 
     }
-    QApplication::quit();
+    else
+    {
+        QApplication::quit();
+    }
 }
 
 void MainWindow::addPhoto()
@@ -241,12 +261,16 @@ void MainWindow::addPhoto()
         album.push_back(photo);
         currentPicture = album.size() - 1;
         albumChanged = true;
+        setDescription();
     }
     if (album.size() != 0)
     {
         deletePhotoAct->setEnabled(true);
+        editDescriptionAct->setEnabled(true);
     }
     updateMoveEnables();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
 }
 
 void MainWindow::deletePhoto()
@@ -293,16 +317,31 @@ void MainWindow::deletePhoto()
     if (album.size() == 0)
     {
         deletePhotoAct->setEnabled(false);
+        editDescriptionAct->setEnabled(false);
     }
     updateMoveEnables();
+    setDescription();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
 }
 
 void MainWindow::editDescription()
 {
-    //open description dialog
-    //edit photo information as needed
+    descriptionDialog->location = &album[currentPicture].Location;
+    descriptionDialog->description = &album[currentPicture].Description;
+    descriptionDialog->date = &album[currentPicture].Date;
+    descriptionDialog->show();
+}
+
+void MainWindow::updateDescription()
+{
+    album[currentPicture].Description = *(descriptionDialog->description);
+    album[currentPicture].Location = *(descriptionDialog->location);
+    album[currentPicture].Date = *(descriptionDialog->date);
     albumChanged = true;
-//    descriptionDialog->show();
+    setDescription();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
 }
 
 void MainWindow::nextPhoto()
@@ -339,6 +378,7 @@ void MainWindow::nextPhoto()
         pictureChanged = false;
     }
     updateMoveEnables();
+    setDescription();
 }
 
 void MainWindow::previousPhoto()
@@ -375,6 +415,7 @@ void MainWindow::previousPhoto()
         pictureChanged = false;
     }
     updateMoveEnables();
+    setDescription();
 }
 
 void MainWindow::moveForward()
@@ -390,6 +431,8 @@ void MainWindow::moveForward()
         currentPicture = currentPicture + 1;
     }
     updateMoveEnables();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
 }
 
 void MainWindow::moveBackward()
@@ -404,6 +447,8 @@ void MainWindow::moveBackward()
         currentPicture = currentPicture - 1;
     }
     updateMoveEnables();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
 }
 
 //void MainWindow::zoomIn()
@@ -435,13 +480,16 @@ void MainWindow::moveBackward()
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, tr("About Photo Album"),
-            tr("Photo Album description goes here."));
+    QString str;
+    str = "Photo Album allows you to add, delete, edit, and add a description to photos.";
+    QMessageBox::about(this, tr("About Photo Album"), str);
 }
 
 void MainWindow::balance()
 {
     this->balanceWidget->show();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
     pictureChanged = true;
 }
 
@@ -460,11 +508,13 @@ void MainWindow::createActions()
     saveAct = new QAction(QIcon(":/icon/images/save.png"), tr("&Save..."), this);
     saveAct->setShortcut(tr("Ctrl+S"));
     saveAct->setStatusTip(tr("Save album"));
+    saveAct->setEnabled(false);
     connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
     saveAsAct = new QAction("Save&As...", this);
     saveAsAct->setShortcut(tr("Ctrl+Alt+S"));
     saveAsAct->setStatusTip(tr("Save album as"));
+    saveAsAct->setEnabled(false);
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
     exitAct = new QAction(QIcon(":/icon/images/exit.png"), tr("E&xit"), this);
@@ -486,6 +536,7 @@ void MainWindow::createActions()
     editDescriptionAct = new QAction(tr("&Edit Description"), this);
     editDescriptionAct->setShortcut(tr("Ctrl+E"));
     editDescriptionAct->setStatusTip(tr("Edit photo description"));
+    editDescriptionAct->setEnabled(false);
     connect(editDescriptionAct, SIGNAL(triggered()), this, SLOT(editDescription()));
 
     nextPhotoAct = new QAction(QIcon(":/icon/images/arrow-right.png"), tr("&Next Photo"), this);
@@ -716,12 +767,14 @@ void MainWindow::rotate()
 void MainWindow::openResize()
 {
     this->resizeDialog->show();
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
+    pictureChanged = true;
 }
 
 void MainWindow::crop()
 {
     rubberBand = new QRubberBand( QRubberBand::Rectangle, this );
-
     validCrop = true;
 }
 
@@ -755,9 +808,14 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
 
         qDebug() << "mouse release " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
 
-//        image = image.copy(QRect(origin, event->pos()).normalized()); //how bout this?//the answer is no.
-        imageLabel->setPixmap(QPixmap::fromImage(image).copy(QRect(origin, event->pos()).normalized()));//.copy(QRect(origin, event->pos()).normalized()));
+        image = image.copy(QRect(origin, event->pos()).normalized()); //how bout this?//the answer is no.
+        imageLabel->setPixmap(QPixmap::fromImage(image));//.copy(QRect(origin, event->pos()).normalized()));//.copy(QRect(origin, event->pos()).normalized()));
         imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
+    imageLabel->setPixmap(QPixmap::fromImage(image).copy(QRect(origin, event->pos()).normalized()));
+    imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
+    pictureChanged = true;
+    saveAct->setEnabled(true);
+    saveAsAct->setEnabled(true);
 
         pictureChanged = true;
 
@@ -831,6 +889,22 @@ void MainWindow::updateMoveEnables()
     previousPhotoAct->setEnabled(true);
     nextPhotoAct->setEnabled(true);
     moveForwardAct->setEnabled(true);
+}
+
+void MainWindow::setDescription()
+{
+    if (album.size() == 0)
+    {
+        descriptionLabel->setText("Description:\nLocation:\nDate:");
+    }
+    else
+    {
+        Photo photo = album[currentPicture];
+        QString str = "Description: " + photo.Description + "\n";
+        str += "Locaiton: " + photo.Location + "\n";
+        str += "Date: " + photo.Date.toString("MMMM d, yyyy");
+        descriptionLabel->setText(str);
+    }
 }
 
 MainWindow::~MainWindow()

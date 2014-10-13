@@ -1,27 +1,32 @@
 #include "descriptionwindow.h"
 #include "ui_descriptionwindow.h"
 
-DescriptionWindow::DescriptionWindow(QString *description, QString *title): //(QWidget *parent) :
-//    QDialog(parent),
+DescriptionWindow::DescriptionWindow():
     ui(new Ui::DescriptionWindow)
 {
     ui->setupUi(this);
 
-    localDescription = description;
-    localTitle = title;
-
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(setImageDescription()));
 
-    setWindowTitle(tr("Change Image Description"));
+    setWindowTitle(tr("Edit Image Description"));
 }
 
-void DescriptionWindow::setImageDescription()
+void DescriptionWindow::show()
 {
-//    localDescription = new QString(ui->descriptionEdit->textChanged()); //I think this is almost correct- this is a pointer though, so it's not quite right.
-
+    QDialog::show();
+    ui->locationEdit->setText(*location);
+    ui->descriptionEdit->setText(*description);
 }
 
 DescriptionWindow::~DescriptionWindow()
 {
     delete ui;
+}
+
+void DescriptionWindow::on_buttonBox_accepted()
+{
+    *location = ui->locationEdit->text();
+    *description = ui->descriptionEdit->text();
+    *date = ui->calendarWidget->selectedDate();
+    emit descriptionChanged();
 }

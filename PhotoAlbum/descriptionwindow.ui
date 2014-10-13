@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>409</width>
-    <height>237</height>
+    <height>284</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>180</y>
+     <x>180</x>
+     <y>240</y>
      <width>221</width>
      <height>41</height>
     </rect>
@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Title</string>
+    <string>Location</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -55,7 +55,7 @@
     <string>Description</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="titleEdit">
+  <widget class="QLineEdit" name="locationEdit">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -65,13 +65,36 @@
     </rect>
    </property>
   </widget>
-  <widget class="QTextEdit" name="descriptionEdit">
+  <widget class="QLineEdit" name="descriptionEdit">
    <property name="geometry">
     <rect>
      <x>100</x>
      <y>50</y>
      <width>291</width>
-     <height>131</height>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Date</string>
+   </property>
+  </widget>
+  <widget class="QCalendarWidget" name="calendarWidget">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>80</y>
+     <width>256</width>
+     <height>155</height>
     </rect>
    </property>
   </widget>

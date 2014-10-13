@@ -12,19 +12,21 @@ class DescriptionWindow : public QDialog
     Q_OBJECT
 
 public:
-//    explicit DescriptionWindow(QWidget *parent = 0);
-
-    explicit DescriptionWindow(QString *description, QString *title);
+    QString* description;
+    QString* location;
+    QDate* date;
+    void show();
+    explicit DescriptionWindow();
     ~DescriptionWindow();
 
-public slots:
-    void setImageDescription();
+private slots:
+    void on_buttonBox_accepted();
+
+signals:
+    void descriptionChanged();
 
 private:
     Ui::DescriptionWindow *ui;
-
-    QString *localDescription;
-    QString *localTitle;
 };
 
 #endif // DESCRIPTIONWINDOW_H

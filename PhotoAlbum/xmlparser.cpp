@@ -70,9 +70,7 @@ QString Parser::ConvertList(vector<Photo> photos)
 
             if (a.Date != date)
             {
-                string += "<date>" ;
-                string += a.Date.toString("MMMM d, yyyy");
-                string += "</date>\n";
+                string += "<date>" + a.Date.toString("MMMM d, yyyy") + "</date>\n";
             }
             if (a.Description != "")
             {

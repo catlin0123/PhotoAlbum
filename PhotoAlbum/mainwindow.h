@@ -81,6 +81,7 @@ private:
     void createStatusBar();
     void updateActions();
     void enableImageEdits(bool enable);
+    void updateMoveEnables();
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 

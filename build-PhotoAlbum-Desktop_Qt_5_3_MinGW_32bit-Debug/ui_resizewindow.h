@@ -17,7 +17,6 @@
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpinBox>
 
 QT_BEGIN_NAMESPACE
@@ -30,7 +29,6 @@ public:
     QLabel *label_2;
     QSpinBox *heightSpinBox;
     QSpinBox *widthSpinBox;
-    QPushButton *testButton;
 
     void setupUi(QDialog *ResizeWindow)
     {
@@ -51,12 +49,13 @@ public:
         heightSpinBox = new QSpinBox(ResizeWindow);
         heightSpinBox->setObjectName(QStringLiteral("heightSpinBox"));
         heightSpinBox->setGeometry(QRect(100, 50, 81, 22));
+        heightSpinBox->setMinimum(1);
+        heightSpinBox->setMaximum(2000);
         widthSpinBox = new QSpinBox(ResizeWindow);
         widthSpinBox->setObjectName(QStringLiteral("widthSpinBox"));
         widthSpinBox->setGeometry(QRect(100, 100, 81, 22));
-        testButton = new QPushButton(ResizeWindow);
-        testButton->setObjectName(QStringLiteral("testButton"));
-        testButton->setGeometry(QRect(170, 10, 75, 23));
+        widthSpinBox->setMinimum(1);
+        widthSpinBox->setMaximum(2000);
 
         retranslateUi(ResizeWindow);
         QObject::connect(buttonBox, SIGNAL(accepted()), ResizeWindow, SLOT(accept()));
@@ -70,7 +69,6 @@ public:
         ResizeWindow->setWindowTitle(QApplication::translate("ResizeWindow", "Dialog", 0));
         label->setText(QApplication::translate("ResizeWindow", "Height", 0));
         label_2->setText(QApplication::translate("ResizeWindow", "Width", 0));
-        testButton->setText(QApplication::translate("ResizeWindow", "test", 0));
     } // retranslateUi
 
 };

@@ -64,6 +64,12 @@
      <height>22</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>2000</number>
+   </property>
   </widget>
   <widget class="QSpinBox" name="widthSpinBox">
    <property name="geometry">
@@ -74,18 +80,11 @@
      <height>22</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QPushButton" name="testButton">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>10</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
+   <property name="minimum">
+    <number>1</number>
    </property>
-   <property name="text">
-    <string>test</string>
+   <property name="maximum">
+    <number>2000</number>
    </property>
   </widget>
  </widget>

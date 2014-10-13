@@ -451,33 +451,6 @@ void MainWindow::moveBackward()
     saveAsAct->setEnabled(true);
 }
 
-//void MainWindow::zoomIn()
-//{
-//    scaleImage(1.25);
-//}
-
-//void MainWindow::zoomOut()
-//{
-//    scaleImage(0.8);
-//}
-
-//void MainWindow::normalSize()
-//{
-//    imageLabel->adjustSize();
-//    scaleFactor = 1.0;
-//    enableImageEdits(true);
-//}
-
-//void MainWindow::fitToWindow()
-//{
-//    bool fitToWindow = fitToWindowAct->isChecked();
-//    scrollArea->setWidgetResizable(fitToWindow);
-//    if (!fitToWindow) {
-//        normalSize();
-//    }
-//    updateActions();
-//}
-
 void MainWindow::about()
 {
     QString str;
@@ -487,9 +460,12 @@ void MainWindow::about()
 
 void MainWindow::balance()
 {
+    //show balance window
     this->balanceWidget->show();
+
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
+
     pictureChanged = true;
 }
 
@@ -563,12 +539,6 @@ void MainWindow::createActions()
     moveBackwardAct->setEnabled(false);
     connect(moveBackwardAct, SIGNAL(triggered()), this, SLOT(moveBackward()));
 
-//    zoomInAct = new QAction(QIcon(":/icon/images/plus-sign.png"),tr("Zoom &In (25%)"), this);
-//    zoomInAct->setShortcut(tr("Ctrl++"));
-//    zoomInAct->setStatusTip(tr("Zoom in"));
-//    zoomInAct->setEnabled(false);
-//    connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
-
     rotateAct = new QAction(tr("Rotate"), this);
     rotateAct->setShortcut(tr("Ctrl+R"));
     rotateAct->setStatusTip(tr("Rotate Image"));
@@ -586,25 +556,6 @@ void MainWindow::createActions()
     cropAct->setStatusTip(tr("Crop Image"));
     cropAct->setEnabled(false);
     connect(cropAct, SIGNAL(triggered()), this, SLOT(crop()));
-
-//    zoomOutAct = new QAction(QIcon(":/icon/images/minus-sign.png"), tr("Zoom &Out (25%)"), this);
-//    zoomOutAct->setShortcut(tr("Ctrl+-"));
-//    zoomOutAct->setStatusTip(tr("Zoom out"));
-//    zoomOutAct->setEnabled(false);
-//    connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
-
-//    normalSizeAct = new QAction(tr("&Normal Size"), this);
-//    normalSizeAct->setShortcut(tr("Ctrl+1"));
-//    normalSizeAct->setStatusTip(tr("Return to original size of image"));
-//    normalSizeAct->setEnabled(false);
-//    connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
-
-//    fitToWindowAct = new QAction(tr("&Fit to Window"), this);
-//    fitToWindowAct->setEnabled(false);
-//    fitToWindowAct->setCheckable(true);
-//    fitToWindowAct->setShortcut(tr("Ctrl+F"));
-//    fitToWindowAct->setStatusTip("Fit image to window");
-//    connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("About this program"));
@@ -637,15 +588,9 @@ void MainWindow::createMenus()
     editMenu->addAction(moveForwardAct);
     editMenu->addAction(moveBackwardAct);
 
-//    viewMenu = new QMenu(tr("&View"), this);
-//    viewMenu->addAction(zoomInAct);
-//    viewMenu->addAction(zoomOutAct);
-//    viewMenu->addAction(normalSizeAct);
-//    viewMenu->addSeparator();
-//    viewMenu->addAction(fitToWindowAct);
 
     imageMenu = new QMenu(tr("&Image"), this);
-    imageMenu->addAction(balanceAct);//should rename
+    imageMenu->addAction(balanceAct);
     imageMenu->addAction(rotateAct);
     imageMenu->addAction(resizeAct);
     imageMenu->addAction(cropAct);
@@ -656,7 +601,6 @@ void MainWindow::createMenus()
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(editMenu);
-//    menuBar()->addMenu(viewMenu);
     menuBar()->addMenu(imageMenu);
     menuBar()->addMenu(helpMenu);
 }
@@ -680,11 +624,6 @@ void MainWindow::createToolBars()
     editToolBar->addAction(moveBackwardAct);
     editToolBar->addAction(moveForwardAct);
 
-//    viewToolBar = addToolBar(tr("View"));
-//    viewToolBar->addAction(zoomInAct);
-//    viewToolBar->addAction(zoomOutAct);
-    //viewToolBar->addAction(fitToWindowAct);
-    //viewToolBar->addAction(normalSizeAct);
 }
 
 void MainWindow::createStatusBar()
@@ -694,27 +633,12 @@ void MainWindow::createStatusBar()
 
 void MainWindow::updateActions()
 {
-//    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-//    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
-//    normalSizeAct->setEnabled(!fitToWindowAct->isChecked());
     rotateAct->setEnabled(true);
     resizeAct->setEnabled(true);
     cropAct->setEnabled(true);
     balanceAct->setEnabled(true);
 }
 
-//void MainWindow::scaleImage(double factor)
-//{
-//    Q_ASSERT(imageLabel->pixmap());
-//    scaleFactor *= factor;
-//    imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-
-//    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-//    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
-
-//    zoomInAct->setEnabled(scaleFactor < 3.0);
-//    zoomOutAct->setEnabled(scaleFactor > 0.333);
-//}
 
 void MainWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
@@ -748,16 +672,21 @@ void MainWindow::rotate()
 //    //more concisely, can collapse the previous three lines into one:
 //    imageLabel->setPixmap(pix.transformed(t->rotate( 45 )).scaled(pix.width(), pix.height(), Qt::KeepAspectRatio));
 
+    //get a pixmap to rotate
     QPixmap pix(*imageLabel->pixmap());
     QMatrix matrix;
     matrix.rotate(90);
     pix = pix.transformed(matrix);
 
+    //find current width and height
     int w = image.width();
     int h = image.height();
 
+    //rotate current image
     QTransform *t = new QTransform;
     image = image.transformed(t->rotate(90)).scaled(h, w, Qt::KeepAspectRatio);
+
+    //set imageLabel to the rotated pixmap with the correct dimesions.
     imageLabel->setPixmap(pix.scaled(h, w, Qt::KeepAspectRatio)); //will this continue to be a thing when we have changes something?
     imageLabel->setFixedSize(h, w);
 
@@ -766,30 +695,33 @@ void MainWindow::rotate()
 
 void MainWindow::openResize()
 {
-    this->resizeDialog->show();
+    //show resize window
+    resizeDialog->show();
+
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
+
     pictureChanged = true;
 }
 
 void MainWindow::crop()
 {
+    //get a new instance of a rubberband and tell the program that we are cropping
     rubberBand = new QRubberBand( QRubberBand::Rectangle, this );
     validCrop = true;
 }
 
-// print button and location of mouse clicks
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+    //set the origin and set up the rubberband, if rubberband exists
     if(validCrop == true)
     {
         origin = event->pos();
-        qDebug() << "origin " << event->pos();
 
         rubberBand->setGeometry(QRect(origin, QSize()));
         rubberBand->show();
     }
-    qDebug() << "mouse press   " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
+    //qDebug() << "mouse press   " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
@@ -808,14 +740,13 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
 
         qDebug() << "mouse release " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
 
-        image = image.copy(QRect(origin, event->pos()).normalized()); //how bout this?//the answer is no.
-        imageLabel->setPixmap(QPixmap::fromImage(image));//.copy(QRect(origin, event->pos()).normalized()));//.copy(QRect(origin, event->pos()).normalized()));
+        //set the image to the cropped version of itself, and set the imageLabel to the current image
+        image = image.copy(QRect(origin, event->pos()).normalized());
+        imageLabel->setPixmap(QPixmap::fromImage(image));
         imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
-    imageLabel->setPixmap(QPixmap::fromImage(image).copy(QRect(origin, event->pos()).normalized()));
-    imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
-    pictureChanged = true;
-    saveAct->setEnabled(true);
-    saveAsAct->setEnabled(true);
+        pictureChanged = true;
+        saveAct->setEnabled(true);
+        saveAsAct->setEnabled(true);
 
         pictureChanged = true;
 
@@ -823,14 +754,6 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
         validCrop = false;
     }
 }
-
-// print keycode of key presses
-//void MainWindow::keyPressEvent(QKeyEvent *event)
-//{
-//    if (event->key() == Qt::Key_Escape)
-//        exit(0);
-//    qDebug() << "keypress event " << event->key();
-//}
 
 void MainWindow::enableImageEdits(bool enable)
 {

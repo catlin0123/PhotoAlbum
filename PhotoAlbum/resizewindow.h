@@ -22,6 +22,8 @@ public:
     explicit ResizeWindow(QImage *image, QLabel *imageLabel);//, QWidget *parent = 0);
     ~ResizeWindow();
 
+    void show();
+
 private slots:
     void resetImageSize();
 

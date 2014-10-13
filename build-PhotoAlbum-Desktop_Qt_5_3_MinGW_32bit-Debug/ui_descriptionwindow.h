@@ -13,12 +13,12 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCalendarWidget>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
-#include <QtWidgets/QTextEdit>
 
 QT_BEGIN_NAMESPACE
 
@@ -28,17 +28,19 @@ public:
     QDialogButtonBox *buttonBox;
     QLabel *label;
     QLabel *label_2;
-    QLineEdit *titleEdit;
-    QTextEdit *descriptionEdit;
+    QLineEdit *locationEdit;
+    QLineEdit *descriptionEdit;
+    QLabel *label_3;
+    QCalendarWidget *calendarWidget;
 
     void setupUi(QDialog *DescriptionWindow)
     {
         if (DescriptionWindow->objectName().isEmpty())
             DescriptionWindow->setObjectName(QStringLiteral("DescriptionWindow"));
-        DescriptionWindow->resize(409, 237);
+        DescriptionWindow->resize(409, 284);
         buttonBox = new QDialogButtonBox(DescriptionWindow);
         buttonBox->setObjectName(QStringLiteral("buttonBox"));
-        buttonBox->setGeometry(QRect(170, 180, 221, 41));
+        buttonBox->setGeometry(QRect(180, 240, 221, 41));
         buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         label = new QLabel(DescriptionWindow);
@@ -47,12 +49,18 @@ public:
         label_2 = new QLabel(DescriptionWindow);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(20, 50, 61, 16));
-        titleEdit = new QLineEdit(DescriptionWindow);
-        titleEdit->setObjectName(QStringLiteral("titleEdit"));
-        titleEdit->setGeometry(QRect(100, 20, 291, 20));
-        descriptionEdit = new QTextEdit(DescriptionWindow);
+        locationEdit = new QLineEdit(DescriptionWindow);
+        locationEdit->setObjectName(QStringLiteral("locationEdit"));
+        locationEdit->setGeometry(QRect(100, 20, 291, 20));
+        descriptionEdit = new QLineEdit(DescriptionWindow);
         descriptionEdit->setObjectName(QStringLiteral("descriptionEdit"));
-        descriptionEdit->setGeometry(QRect(100, 50, 291, 131));
+        descriptionEdit->setGeometry(QRect(100, 50, 291, 20));
+        label_3 = new QLabel(DescriptionWindow);
+        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setGeometry(QRect(20, 80, 46, 13));
+        calendarWidget = new QCalendarWidget(DescriptionWindow);
+        calendarWidget->setObjectName(QStringLiteral("calendarWidget"));
+        calendarWidget->setGeometry(QRect(100, 80, 256, 155));
 
         retranslateUi(DescriptionWindow);
         QObject::connect(buttonBox, SIGNAL(accepted()), DescriptionWindow, SLOT(accept()));
@@ -64,8 +72,9 @@ public:
     void retranslateUi(QDialog *DescriptionWindow)
     {
         DescriptionWindow->setWindowTitle(QApplication::translate("DescriptionWindow", "Dialog", 0));
-        label->setText(QApplication::translate("DescriptionWindow", "Title", 0));
+        label->setText(QApplication::translate("DescriptionWindow", "Location", 0));
         label_2->setText(QApplication::translate("DescriptionWindow", "Description", 0));
+        label_3->setText(QApplication::translate("DescriptionWindow", "Date", 0));
     } // retranslateUi
 
 };

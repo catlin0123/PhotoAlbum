@@ -39,7 +39,7 @@ void pictureedits::brighten(int i)
     if(brightenPrevVal < i) val = 10;
     brightenPrevVal = i;
 
-    // brighten the image by 30 intensity levels (25% of intensity range)
+    // brighten the image by 10 intensity levels
     //this goes the right way now? but still does the negate thing horrifically.
        for (int x = 0; x < picImage->width(); x++)
        {
@@ -57,7 +57,6 @@ void pictureedits::brighten(int i)
        }
 
        // store image in label's pixmap
-       //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
        picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
@@ -91,7 +90,6 @@ void pictureedits::contrast(int i)
     }
 
     // store image in label's pixmap
-    //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
@@ -119,7 +117,6 @@ void pictureedits::edge()
     }
 
     // store image in label's pixmap
-    //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
@@ -151,7 +148,6 @@ void pictureedits::gamma(int i)
         }
 
     // store image in label's pixmap
-    //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
@@ -170,7 +166,6 @@ void pictureedits::negate()
     picImage->invertPixels();
 
     // store image in label's pixmap
-    //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
@@ -224,11 +219,9 @@ void pictureedits::sharpen(int i)
     *picImage = sharpImage;
 
     // store image in label's pixmap
-    //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
-//i dont know that this does anything.
 void pictureedits::smooth(int i)
 {
     if(picImage->isNull())
@@ -266,7 +259,6 @@ void pictureedits::smooth(int i)
     *picImage = smoothImage;
 
     // store image in label's pixmap
-    //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 

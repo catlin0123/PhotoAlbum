@@ -12,14 +12,16 @@ ResizeWindow::ResizeWindow(QImage *image, QLabel *imageLabel) ://, QWidget *pare
 
     setWindowTitle(tr("Balance"));
 
-    //this only gets called at the start. so. so. that's a. problem. hmmmm.
-    ui->widthSpinBox->setValue(image->width());
-    ui->heightSpinBox->setValue(image->height());
-
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(resetImageSize()));
 
-//    connect(ui->testButton, SIGNAL(clicked()), this, SLOT(resetImageSize()));
     setWindowTitle(tr("Resize Image"));
+}
+
+void ResizeWindow::show()
+{
+    QDialog::show();
+    ui->widthSpinBox->setValue(resizeImage->width());
+    ui->heightSpinBox->setValue(resizeImage->height());
 }
 
 void ResizeWindow::resetImageSize()

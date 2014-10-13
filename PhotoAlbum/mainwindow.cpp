@@ -7,6 +7,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    validCrop = false;
+    pictureChanged = false;
+    albumChanged = false;
+    newFile = true;
+    currentPicture = 0;
+
     ui->setupUi(this);
     imageLabel = new QLabel;
     imageLabel->setBackgroundRole(QPalette::Base);
@@ -33,19 +39,50 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->mainToolBar->hide();
 }
 
+void MainWindow::newAlbum()
+{
+    if (pictureChanged || albumChanged)
+    {
+        save();
+    }
+    album = vector<Photo>();
+    image = QImage();
+    imageLabel->setPixmap(QPixmap::fromImage(image));
+    imageLabel->resize(image.width(), image.height());
+    enableImageEdits(false);
+}
+
 void MainWindow::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
-    if (!fileName.isEmpty())
+    if (pictureChanged || albumChanged)
     {
-        //QImage image(fileName);
-        image = QImage(fileName); //should probably do a thing to check if this is a valid thingy
+        save();
+    }
 
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("XML files (*.xml)"));
+    if (!filename.isEmpty())
+    {
+        QFile* file = new QFile(filename);
+        Parser parse;
+        currentPicture = 0;
+        album = parse.GetPhotoAlbums(file);
+        if (album.size() != 0)
+        {
+            image = QImage(album[0].FileName);
+            imageLabel->setPixmap(QPixmap::fromImage(image));
+            imageLabel->resize(image.width(), image.height());
+            enableImageEdits(true);
+        }
+        else
+        {
+            enableImageEdits(false);
+        }
         if (image.isNull())
         {
-            QMessageBox::information(this, tr("Image Viewer"), tr("Cannot load %1.").arg(fileName));
+            QMessageBox::information(this, tr("Image Viewer"), tr("Cannot load %1.").arg(filename));
             return;
         }
+
         imageLabel->setPixmap(QPixmap::fromImage(image));
         scaleFactor = 1.0;
 
@@ -54,6 +91,265 @@ void MainWindow::open()
 
         if (!fitToWindowAct->isChecked())
             imageLabel->adjustSize();
+    }
+}
+
+void MainWindow::save()
+{
+    if (newFile)
+    {
+        saveAs();
+    }
+    else
+    {
+        if (pictureChanged)
+        {
+            image.save(album[currentPicture].FileName);
+        }
+        QFile file;
+        file.setFileName(filename);
+        file.open(QIODevice::ReadWrite);
+        Parser parse;
+        QString string = parse.ConvertList(album);
+        QTextStream stream(&file);
+        stream << string;
+        file.close();
+    }
+}
+
+void MainWindow::saveAs()
+{
+    if (pictureChanged)
+    {
+        image.save(album[currentPicture].FileName);
+    }
+    //save the album and close the program
+    QFile file;
+    filename = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("XML files (*.xml)"));
+    newFile = false;
+    file.setFileName(filename);
+    file.open(QIODevice::ReadWrite);
+    Parser parse;
+    QString string = parse.ConvertList(album);
+    QTextStream stream(&file);
+    stream << string;
+    file.close();
+}
+
+void MainWindow::close()
+{
+    if (pictureChanged)
+    {
+        image.save(album[currentPicture].FileName);
+    }
+    if (albumChanged)
+    {
+        int response = QMessageBox::information(this, tr("Save"),
+                tr("Save changes before closing?"),
+                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
+
+        switch (response)
+        {
+            case QMessageBox::Save :
+            {
+                //save the album and close the program
+                QFile file;
+                if (newFile)
+                {
+                    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("XML files (*.xml)"));
+                    file.setFileName(fileName);
+                    file.open(QIODevice::ReadWrite);
+                }
+                else
+                {
+                    file.setFileName(filename);
+                    file.open(QIODevice::ReadWrite);
+                }
+
+                //get the string to output
+                Parser parse;
+                QString string = parse.ConvertList(album);
+                QTextStream stream(&file);
+                stream << string;
+                file.close();
+
+                //quit the program
+                QApplication::quit();
+                break;
+            }
+            case QMessageBox::Discard :
+            {
+                //quit the program
+                QApplication::quit();
+                break;
+            }
+            case QMessageBox::Cancel :
+                break;
+            default:
+                break;
+        }
+    }
+
+}
+
+void MainWindow::addPhoto()
+{
+    Photo photo;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("Image Files (*.png *.jpg *.bmp)"));
+    if (fileName != "")
+    {
+        image = QImage(fileName);
+        imageLabel->setPixmap(QPixmap::fromImage(image));
+        imageLabel->resize(image.width(), image.height());
+        enableImageEdits(true);
+
+        photo.FileName = fileName;
+        album.push_back(photo);
+    }
+
+}
+
+void MainWindow::deletePhoto()
+{
+    if (album.size() != 0)
+    {
+        int response = QMessageBox::information(this, tr("Delete"),
+                tr("Delete current photo from album?"),
+                QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+        switch (response)
+        {
+            case QMessageBox::Ok:
+                //delete photo from list
+                for (unsigned int i = currentPicture; i + 1 < album.size(); i++)
+                {
+                    album[i + 1] = album[i];
+                }
+                album.pop_back();
+                //open next photo for viewing
+                if (currentPicture == album.size())
+                {
+                    currentPicture = album.size() - 1;
+                }
+                if (album.size() != 0 )
+                {
+                    image = QImage(album[currentPicture].FileName);
+                    imageLabel->setPixmap(QPixmap::fromImage(image));
+                    imageLabel->resize(image.width(), image.height());
+                }
+                else
+                {
+                    image = QImage();
+                    imageLabel->setPixmap(QPixmap::fromImage(image));
+                    imageLabel->resize(image.width(),image.height());
+                    enableImageEdits(false);
+                }
+                break;
+            case QMessageBox::Cancel:
+                break;
+        }
+    }
+}
+
+void MainWindow::editDescription()
+{
+    //open description dialog
+    //edit photo information as needed
+
+}
+
+void MainWindow::nextPhoto()
+{
+    if (currentPicture != album.size() - 1 && album.size() != 0)
+    {
+        if (pictureChanged)
+        {
+            int response = QMessageBox::information(this, tr("Save"),
+                    tr("Save changes to photo?"),
+                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
+
+            switch (response)
+            {
+                case QMessageBox::Save :
+                {
+                    //save the picture
+                    image.save(album[currentPicture].FileName);
+                    break;
+                }
+                case QMessageBox::Discard :
+                    break;
+                case QMessageBox::Cancel :
+                    return;
+                    break;
+                default:
+                    break;
+            }
+        }
+        currentPicture = currentPicture + 1;
+        image = QImage(album[currentPicture].FileName);
+        imageLabel->setPixmap(QPixmap::fromImage(image));
+        imageLabel->resize(image.width(), image.height());
+        pictureChanged = false;
+    }
+}
+
+void MainWindow::previousPhoto()
+{
+    if (currentPicture != 0)
+    {
+        if (pictureChanged)
+        {
+            int response = QMessageBox::information(this, tr("Save"),
+                    tr("Save changes to photo?"),
+                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
+
+            switch (response)
+            {
+                case QMessageBox::Save :
+                {
+                    //save the the picture
+                    image.save(album[currentPicture].FileName);
+                    break;
+                }
+                case QMessageBox::Discard :
+                    break;
+                case QMessageBox::Cancel :
+                    return;
+                    break;
+                default:
+                    break;
+            }
+        }
+        currentPicture = currentPicture - 1;
+        image = QImage(album[currentPicture].FileName);
+        imageLabel->setPixmap(QPixmap::fromImage(image));
+        imageLabel->resize(image.width(), image.height());
+        pictureChanged = false;
+    }
+}
+
+void MainWindow::moveForward()
+{
+    //make sure we don't step off the end of the vector
+    if (currentPicture + 1 < album.size())
+    {
+        //swap the photos
+        Photo temp = album[currentPicture];
+        album[currentPicture] = album[currentPicture + 1];
+        album[currentPicture + 1] = temp;
+        albumChanged = true;
+    }
+}
+
+void MainWindow::moveBackward()
+{
+    //check that we don't step off the end of the vector
+    if ((currentPicture - 1) >= 0 && album.size() != 0)
+    {
+        Photo temp = album[currentPicture];
+        album[currentPicture] = album[currentPicture - 1];
+        album[currentPicture - 1] = temp;
+        albumChanged = true;
     }
 }
 
@@ -71,6 +367,7 @@ void MainWindow::normalSize()
 {
     imageLabel->adjustSize();
     scaleFactor = 1.0;
+    enableImageEdits(true);
 }
 
 void MainWindow::fitToWindow()
@@ -96,17 +393,67 @@ void MainWindow::balance()
 
 void MainWindow::createActions()
 {
-    openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+    newAct = new QAction(QIcon(":/icon/images/new.png"), tr("&New..."), this);
+    newAct->setShortcut(tr("Ctrl+N"));
+    newAct->setStatusTip(tr("Create a new album"));
+    connect(newAct, SIGNAL(triggered()), this, SLOT(newAlbum()));
+
+    openAct = new QAction(QIcon(":/icon/images/open.png"), tr("&Open..."), this);
     openAct->setShortcut(tr("Ctrl+O"));
     openAct->setStatusTip(tr("Open a file"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-    exitAct = new QAction(QIcon(":/images/exit.png"), tr("E&xit"), this);
+    saveAct = new QAction(QIcon(":/icon/images/save.png"), tr("&Save..."), this);
+    saveAct->setShortcut(tr("Ctrl+S"));
+    saveAct->setStatusTip(tr("Save album"));
+    connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+
+    saveAsAct = new QAction("Save&As...", this);
+    saveAsAct->setShortcut(tr("Ctrl+Alt+S"));
+    saveAsAct->setStatusTip(tr("Save album as"));
+    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+
+    exitAct = new QAction(QIcon(":/icon/images/exit.png"), tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
     exitAct->setStatusTip(tr("Exit the program"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    zoomInAct = new QAction(tr("Zoom &In (25%)"), this);
+    addPhotoAct = new QAction(QIcon(":/icon/images/add-new.png"), tr("&Add Photo"), this);
+    addPhotoAct->setShortcut(tr("Ctrl+A"));
+    addPhotoAct->setStatusTip(tr("Add photo to album"));
+    connect(addPhotoAct, SIGNAL(triggered()), this, SLOT(addPhoto()));
+
+    deletePhotoAct = new QAction(QIcon(":/icon/images/delete.png"), tr("&Delete Photo"), this);
+    deletePhotoAct->setShortcut(tr("Ctrl+D"));
+    deletePhotoAct->setStatusTip(tr("Delete photo from album"));
+    connect(deletePhotoAct, SIGNAL(triggered()), this, SLOT(deletePhoto()));
+
+    editDescriptionAct = new QAction(tr("&Edit Description"), this);
+    editDescriptionAct->setShortcut(tr("Ctrl+E"));
+    editDescriptionAct->setStatusTip(tr("Edit photo description"));
+    connect(editDescriptionAct, SIGNAL(triggered()), this, SLOT(editDescription()));
+
+    nextPhotoAct = new QAction(QIcon(":/icon/images/arrow-right.png"), tr("&Next Photo"), this);
+    nextPhotoAct->setShortcut(tr("Ctrl+X"));
+    nextPhotoAct->setStatusTip(tr("View next photo"));
+    connect(nextPhotoAct, SIGNAL(triggered()), this, SLOT(nextPhoto()));
+
+    previousPhotoAct = new QAction(QIcon(":/icon/images/arrow-left.png"), tr("&Previous Photo"), this);
+    previousPhotoAct->setShortcut(tr("Ctrl+P"));
+    previousPhotoAct->setStatusTip(tr("View previous photo"));
+    connect(previousPhotoAct, SIGNAL(triggered()), this, SLOT(previousPhoto()));
+
+    moveForwardAct = new QAction(QIcon(":/icon/images/arrow-down.png"), tr("&Move Photo Forward"), this);
+    moveForwardAct->setShortcut(tr("Ctrl+M"));
+    moveForwardAct->setStatusTip(tr("Move photo forward in album"));
+    connect(moveForwardAct, SIGNAL(triggered()), this, SLOT(moveForward()));
+
+    moveBackwardAct = new QAction(QIcon(":/icon/images/arrow-up.png"), tr("&Move Photo Backward"), this);
+    moveBackwardAct->setShortcut(tr("Ctrl+B"));
+    moveBackwardAct->setStatusTip(tr("Move photo backward in album"));
+    connect(moveBackwardAct, SIGNAL(triggered()), this, SLOT(moveBackward()));
+
+    zoomInAct = new QAction(QIcon(":/icon/images/plus-sign.png"),tr("Zoom &In (25%)"), this);
     zoomInAct->setShortcut(tr("Ctrl++"));
     zoomInAct->setStatusTip(tr("Zoom in"));
     zoomInAct->setEnabled(false);
@@ -125,19 +472,19 @@ void MainWindow::createActions()
     connect(resizeAct, SIGNAL(triggered()), this, SLOT(openResize()));
 
     cropAct = new QAction(tr("Crop"), this);
-    cropAct->setShortcut(tr("Ctrl+1"));
+    cropAct->setShortcut(tr("Ctrl+C"));
     cropAct->setStatusTip(tr("Crop Image"));
     cropAct->setEnabled(false);
     connect(cropAct, SIGNAL(triggered()), this, SLOT(crop()));
 
-    zoomOutAct = new QAction(tr("Zoom &Out (25%)"), this);
+    zoomOutAct = new QAction(QIcon(":/icon/images/minus-sign.png"), tr("Zoom &Out (25%)"), this);
     zoomOutAct->setShortcut(tr("Ctrl+-"));
     zoomOutAct->setStatusTip(tr("Zoom out"));
     zoomOutAct->setEnabled(false);
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
     normalSizeAct = new QAction(tr("&Normal Size"), this);
-    normalSizeAct->setShortcut(tr("Ctrl+S"));
+    normalSizeAct->setShortcut(tr("Ctrl+1"));
     normalSizeAct->setStatusTip(tr("Return to original size of image"));
     normalSizeAct->setEnabled(false);
     connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
@@ -162,9 +509,23 @@ void MainWindow::createActions()
 void MainWindow::createMenus()
 {
     fileMenu = new QMenu(tr("&File"), this);
+    fileMenu->addAction(newAct);
     fileMenu->addAction(openAct);
+    fileMenu->addAction(saveAct);
+    fileMenu->addAction(saveAsAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
+
+    editMenu = new QMenu(tr("&Edit"), this);
+    editMenu->addAction(addPhotoAct);
+    editMenu->addAction(deletePhotoAct);
+    editMenu->addSeparator();
+    editMenu->addAction(editDescriptionAct);
+    editMenu->addSeparator();
+    editMenu->addAction(nextPhotoAct);
+    editMenu->addAction(previousPhotoAct);
+    editMenu->addAction(moveForwardAct);
+    editMenu->addAction(moveBackwardAct);
 
     viewMenu = new QMenu(tr("&View"), this);
     viewMenu->addAction(zoomInAct);
@@ -184,24 +545,36 @@ void MainWindow::createMenus()
     helpMenu->addAction(aboutAct);
 
     menuBar()->addMenu(fileMenu);
+    menuBar()->addMenu(editMenu);
     menuBar()->addMenu(viewMenu);
     menuBar()->addMenu(imageMenu);
-//    menuBar()->addMenu(editMenu);
     menuBar()->addMenu(helpMenu);
 }
 
 void MainWindow::createToolBars()
 {
     fileToolBar = addToolBar(tr("File"));
-//    fileToolBar->addAction(newAct);
+    fileToolBar->addAction(newAct);
     fileToolBar->addAction(openAct);
-//    fileToolBar->addAction(saveAct);
+    fileToolBar->addAction(saveAct);
+    fileToolBar->addSeparator();
+    fileToolBar->addAction(exitAct);
+
+    editToolBar = addToolBar(tr("Edit"));
+    editToolBar->addAction(addPhotoAct);
+    editToolBar->addAction(deletePhotoAct);
+    //editToolBar->addAction(editDescriptionAct);
+    editToolBar->addSeparator();
+    editToolBar->addAction(previousPhotoAct);
+    editToolBar->addAction(nextPhotoAct);
+    editToolBar->addAction(moveBackwardAct);
+    editToolBar->addAction(moveForwardAct);
 
     viewToolBar = addToolBar(tr("View"));
     viewToolBar->addAction(zoomInAct);
     viewToolBar->addAction(zoomOutAct);
-    viewToolBar->addAction(fitToWindowAct);
-    viewToolBar->addAction(normalSizeAct);
+    //viewToolBar->addAction(fitToWindowAct);
+    //viewToolBar->addAction(normalSizeAct);
 }
 
 void MainWindow::createStatusBar()
@@ -325,6 +698,18 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
 //        exit(0);
 //    qDebug() << "keypress event " << event->key();
 //}
+
+void MainWindow::enableImageEdits(bool enable)
+{
+   rotateAct->setEnabled(enable);
+   resizeAct->setEnabled(enable);
+   zoomInAct->setEnabled(enable);
+   zoomOutAct->setEnabled(enable);
+   cropAct->setEnabled(enable);
+   normalSizeAct->setEnabled(enable);
+   fitToWindowAct->setEnabled(enable);
+   balanceAct->setEnabled(enable);
+}
 
 MainWindow::~MainWindow()
 {

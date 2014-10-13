@@ -31,3 +31,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     pictureedits.ui \
     resizewindow.ui
+
+RESOURCES += \
+    Resources.qrc
+

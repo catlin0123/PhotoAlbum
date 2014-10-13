@@ -1,7 +1,7 @@
 #ifndef PHOTO_H
 #define PHOTO_H
 
-#endif // PHOTO_H
+
 
 #include <QDate>
 #include <QString>
@@ -14,3 +14,4 @@ struct Photo
     QString Location = "";
     QString Description = "";
 };
+#endif // PHOTO_H

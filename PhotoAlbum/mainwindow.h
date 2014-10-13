@@ -15,6 +15,8 @@
 #include "pictureedits.h"
 #include "resizewindow.h"
 #include "cropfunction.h"
+#include "xmlparser.h"
+#include "Photo.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -46,7 +48,20 @@ public:
 //    void keyPressEvent( QKeyEvent *event );
 
 private slots:
+    void newAlbum();
     void open();
+    void save();
+    void saveAs();
+    void close();
+
+    void addPhoto();
+    void deletePhoto();
+    void editDescription();
+    void nextPhoto();
+    void previousPhoto();
+    void moveForward();
+    void moveBackward();
+
     void zoomIn();
     void zoomOut();
     void normalSize();
@@ -65,6 +80,7 @@ private:
     void createToolBars();
     void createStatusBar();
     void updateActions();
+    void enableImageEdits(bool enable);
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
@@ -73,8 +89,20 @@ private:
     QScrollArea *scrollArea;
     double scaleFactor;
 
+    QAction *newAct;
     QAction *openAct;
+    QAction *saveAct;
+    QAction *saveAsAct;
     QAction *exitAct;
+
+    QAction *addPhotoAct;
+    QAction *deletePhotoAct;
+    QAction *editDescriptionAct;
+    QAction *nextPhotoAct;
+    QAction *previousPhotoAct;
+    QAction *moveForwardAct;
+    QAction *moveBackwardAct;
+
     QAction *zoomInAct;
     QAction *zoomOutAct;
     QAction *normalSizeAct;
@@ -86,11 +114,13 @@ private:
     QAction *cropAct;
 
     QMenu *fileMenu;
+    QMenu *editMenu;
     QMenu *viewMenu;
     QMenu *helpMenu;
     QMenu *imageMenu;
 
     QToolBar *fileToolBar;
+    QToolBar *editToolBar;
     QToolBar *viewToolBar;
 
     pictureedits *balanceWidget;
@@ -99,7 +129,14 @@ private:
 
     QRubberBand *rubberBand;
     QPoint origin;
-    bool validCrop = false;
+
+    bool validCrop;
+    bool pictureChanged;
+    bool albumChanged;
+    bool newFile;
+    int currentPicture;
+    QString filename;
+    vector<Photo> album;
 };
 
 #endif // MAINWINDOW_H

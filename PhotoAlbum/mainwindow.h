@@ -14,8 +14,8 @@
 #include <QRubberBand>
 #include "pictureedits.h"
 #include "resizewindow.h"
-#include "cropfunction.h"
 #include "xmlparser.h"
+#include "descriptionwindow.h"
 #include "Photo.h"
 
 QT_BEGIN_NAMESPACE
@@ -62,10 +62,11 @@ private slots:
     void moveForward();
     void moveBackward();
 
-    void zoomIn();
-    void zoomOut();
-    void normalSize();
-    void fitToWindow();
+//    void zoomIn();
+//    void zoomOut();
+//    void normalSize();
+//    void fitToWindow();
+
     void about();
     void balance();
     void rotate();
@@ -82,7 +83,7 @@ private:
     void updateActions();
     void enableImageEdits(bool enable);
     void updateMoveEnables();
-    void scaleImage(double factor);
+//    void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
     QLabel *imageLabel;
@@ -104,10 +105,11 @@ private:
     QAction *moveForwardAct;
     QAction *moveBackwardAct;
 
-    QAction *zoomInAct;
-    QAction *zoomOutAct;
-    QAction *normalSizeAct;
-    QAction *fitToWindowAct;
+//    QAction *zoomInAct;
+//    QAction *zoomOutAct;
+//    QAction *normalSizeAct;
+//    QAction *fitToWindowAct;
+
     QAction *aboutAct;
     QAction *balanceAct;
     QAction *rotateAct;
@@ -116,17 +118,15 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
-    QMenu *viewMenu;
     QMenu *helpMenu;
     QMenu *imageMenu;
 
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
-    QToolBar *viewToolBar;
 
     pictureedits *balanceWidget;
     ResizeWindow *resizeDialog;
-//    CropFunction *cropFunction;
+    DescriptionWindow *descriptionDialog;
 
     QRubberBand *rubberBand;
     QPoint origin;

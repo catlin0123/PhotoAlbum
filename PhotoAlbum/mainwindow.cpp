@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->balanceWidget = new pictureedits(&image, imageLabel);
     this->resizeDialog = new ResizeWindow(&image, imageLabel);
-//    this->cropFunction = new CropFunction(&image, imageLabel);
+//    this->descriptionDialog = new DescriptionWindow(text, text);
 
     setWindowTitle(tr("Photo Album"));
     resize(500, 400);
@@ -120,11 +120,7 @@ void MainWindow::open()
         imageLabel->setPixmap(QPixmap::fromImage(image));
         scaleFactor = 1.0;
 
-        fitToWindowAct->setEnabled(true);
         updateActions();
-
-        if (!fitToWindowAct->isChecked())
-            imageLabel->adjustSize();
     }
     updateMoveEnables();
 }
@@ -306,6 +302,7 @@ void MainWindow::editDescription()
     //open description dialog
     //edit photo information as needed
     albumChanged = true;
+//    descriptionDialog->show();
 }
 
 void MainWindow::nextPhoto()
@@ -409,32 +406,32 @@ void MainWindow::moveBackward()
     updateMoveEnables();
 }
 
-void MainWindow::zoomIn()
-{
-    scaleImage(1.25);
-}
+//void MainWindow::zoomIn()
+//{
+//    scaleImage(1.25);
+//}
 
-void MainWindow::zoomOut()
-{
-    scaleImage(0.8);
-}
+//void MainWindow::zoomOut()
+//{
+//    scaleImage(0.8);
+//}
 
-void MainWindow::normalSize()
-{
-    imageLabel->adjustSize();
-    scaleFactor = 1.0;
-    enableImageEdits(true);
-}
+//void MainWindow::normalSize()
+//{
+//    imageLabel->adjustSize();
+//    scaleFactor = 1.0;
+//    enableImageEdits(true);
+//}
 
-void MainWindow::fitToWindow()
-{
-    bool fitToWindow = fitToWindowAct->isChecked();
-    scrollArea->setWidgetResizable(fitToWindow);
-    if (!fitToWindow) {
-        normalSize();
-    }
-    updateActions();
-}
+//void MainWindow::fitToWindow()
+//{
+//    bool fitToWindow = fitToWindowAct->isChecked();
+//    scrollArea->setWidgetResizable(fitToWindow);
+//    if (!fitToWindow) {
+//        normalSize();
+//    }
+//    updateActions();
+//}
 
 void MainWindow::about()
 {
@@ -515,11 +512,11 @@ void MainWindow::createActions()
     moveBackwardAct->setEnabled(false);
     connect(moveBackwardAct, SIGNAL(triggered()), this, SLOT(moveBackward()));
 
-    zoomInAct = new QAction(QIcon(":/icon/images/plus-sign.png"),tr("Zoom &In (25%)"), this);
-    zoomInAct->setShortcut(tr("Ctrl++"));
-    zoomInAct->setStatusTip(tr("Zoom in"));
-    zoomInAct->setEnabled(false);
-    connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
+//    zoomInAct = new QAction(QIcon(":/icon/images/plus-sign.png"),tr("Zoom &In (25%)"), this);
+//    zoomInAct->setShortcut(tr("Ctrl++"));
+//    zoomInAct->setStatusTip(tr("Zoom in"));
+//    zoomInAct->setEnabled(false);
+//    connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
     rotateAct = new QAction(tr("Rotate"), this);
     rotateAct->setShortcut(tr("Ctrl+R"));
@@ -539,24 +536,24 @@ void MainWindow::createActions()
     cropAct->setEnabled(false);
     connect(cropAct, SIGNAL(triggered()), this, SLOT(crop()));
 
-    zoomOutAct = new QAction(QIcon(":/icon/images/minus-sign.png"), tr("Zoom &Out (25%)"), this);
-    zoomOutAct->setShortcut(tr("Ctrl+-"));
-    zoomOutAct->setStatusTip(tr("Zoom out"));
-    zoomOutAct->setEnabled(false);
-    connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
+//    zoomOutAct = new QAction(QIcon(":/icon/images/minus-sign.png"), tr("Zoom &Out (25%)"), this);
+//    zoomOutAct->setShortcut(tr("Ctrl+-"));
+//    zoomOutAct->setStatusTip(tr("Zoom out"));
+//    zoomOutAct->setEnabled(false);
+//    connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-    normalSizeAct = new QAction(tr("&Normal Size"), this);
-    normalSizeAct->setShortcut(tr("Ctrl+1"));
-    normalSizeAct->setStatusTip(tr("Return to original size of image"));
-    normalSizeAct->setEnabled(false);
-    connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
+//    normalSizeAct = new QAction(tr("&Normal Size"), this);
+//    normalSizeAct->setShortcut(tr("Ctrl+1"));
+//    normalSizeAct->setStatusTip(tr("Return to original size of image"));
+//    normalSizeAct->setEnabled(false);
+//    connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
 
-    fitToWindowAct = new QAction(tr("&Fit to Window"), this);
-    fitToWindowAct->setEnabled(false);
-    fitToWindowAct->setCheckable(true);
-    fitToWindowAct->setShortcut(tr("Ctrl+F"));
-    fitToWindowAct->setStatusTip("Fit image to window");
-    connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+//    fitToWindowAct = new QAction(tr("&Fit to Window"), this);
+//    fitToWindowAct->setEnabled(false);
+//    fitToWindowAct->setCheckable(true);
+//    fitToWindowAct->setShortcut(tr("Ctrl+F"));
+//    fitToWindowAct->setStatusTip("Fit image to window");
+//    connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("About this program"));
@@ -589,12 +586,12 @@ void MainWindow::createMenus()
     editMenu->addAction(moveForwardAct);
     editMenu->addAction(moveBackwardAct);
 
-    viewMenu = new QMenu(tr("&View"), this);
-    viewMenu->addAction(zoomInAct);
-    viewMenu->addAction(zoomOutAct);
-    viewMenu->addAction(normalSizeAct);
-    viewMenu->addSeparator();
-    viewMenu->addAction(fitToWindowAct);
+//    viewMenu = new QMenu(tr("&View"), this);
+//    viewMenu->addAction(zoomInAct);
+//    viewMenu->addAction(zoomOutAct);
+//    viewMenu->addAction(normalSizeAct);
+//    viewMenu->addSeparator();
+//    viewMenu->addAction(fitToWindowAct);
 
     imageMenu = new QMenu(tr("&Image"), this);
     imageMenu->addAction(balanceAct);//should rename
@@ -608,7 +605,7 @@ void MainWindow::createMenus()
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(editMenu);
-    menuBar()->addMenu(viewMenu);
+//    menuBar()->addMenu(viewMenu);
     menuBar()->addMenu(imageMenu);
     menuBar()->addMenu(helpMenu);
 }
@@ -632,9 +629,9 @@ void MainWindow::createToolBars()
     editToolBar->addAction(moveBackwardAct);
     editToolBar->addAction(moveForwardAct);
 
-    viewToolBar = addToolBar(tr("View"));
-    viewToolBar->addAction(zoomInAct);
-    viewToolBar->addAction(zoomOutAct);
+//    viewToolBar = addToolBar(tr("View"));
+//    viewToolBar->addAction(zoomInAct);
+//    viewToolBar->addAction(zoomOutAct);
     //viewToolBar->addAction(fitToWindowAct);
     //viewToolBar->addAction(normalSizeAct);
 }
@@ -646,28 +643,27 @@ void MainWindow::createStatusBar()
 
 void MainWindow::updateActions()
 {
-    //can probably take out the 'fit to window' things. as soon as we destroy the 'fit to window' thing.
-    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
-    normalSizeAct->setEnabled(!fitToWindowAct->isChecked());
-    rotateAct->setEnabled(!fitToWindowAct->isChecked());
-    resizeAct->setEnabled(!fitToWindowAct->isChecked());
-    cropAct->setEnabled(!fitToWindowAct->isChecked());
-    balanceAct->setEnabled(!fitToWindowAct->isChecked());
+//    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
+//    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
+//    normalSizeAct->setEnabled(!fitToWindowAct->isChecked());
+    rotateAct->setEnabled(true);
+    resizeAct->setEnabled(true);
+    cropAct->setEnabled(true);
+    balanceAct->setEnabled(true);
 }
 
-void MainWindow::scaleImage(double factor)
-{
-    Q_ASSERT(imageLabel->pixmap());
-    scaleFactor *= factor;
-    imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
+//void MainWindow::scaleImage(double factor)
+//{
+//    Q_ASSERT(imageLabel->pixmap());
+//    scaleFactor *= factor;
+//    imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
 
-    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
+//    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
+//    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
 
-    zoomInAct->setEnabled(scaleFactor < 3.0);
-    zoomOutAct->setEnabled(scaleFactor > 0.333);
-}
+//    zoomInAct->setEnabled(scaleFactor < 3.0);
+//    zoomOutAct->setEnabled(scaleFactor > 0.333);
+//}
 
 void MainWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
@@ -711,7 +707,6 @@ void MainWindow::openResize()
 
 void MainWindow::crop()
 {
-//    this->cropFunction = new CropFunction(&image, imageLabel);
     rubberBand = new QRubberBand( QRubberBand::Rectangle, this );
 
     validCrop = true;
@@ -767,11 +762,8 @@ void MainWindow::enableImageEdits(bool enable)
 {
    rotateAct->setEnabled(enable);
    resizeAct->setEnabled(enable);
-   zoomInAct->setEnabled(enable);
-   zoomOutAct->setEnabled(enable);
+
    cropAct->setEnabled(enable);
-   normalSizeAct->setEnabled(enable);
-   fitToWindowAct->setEnabled(enable);
    balanceAct->setEnabled(enable);
 }
 

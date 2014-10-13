@@ -679,24 +679,37 @@ void MainWindow::rotate()
         exit(-2);
     }
 
-    qDebug() << "This should eventually rotate the image, but.";
+//    QPixmap pix(*imageLabel->pixmap());
 
-//    QPixmap pix(picImage);
-
-    // create a Qtransform for rotation (can also use for translation and scaling)
+//    //create a Qtransform for rotation (can also use for translation and scaling)
 //    QTransform *t = new QTransform;
 
-    // rotate pixmap by 45 degrees
-//    QPixmap rpix(image.transformed(t->rotate(45)));
+//    //rotate pixmap by 45 degrees
+//    QPixmap rpix(pix.transformed(t->rotate(45)));
+////                image.transformed(t->rotate(45)));
 
-    // scale to original image dimensions, retaining aspect ratio
+//    //scale to original image dimensions, retaining aspect ratio
 //    QPixmap spix(rpix.scaled(image.width(), image.height(), Qt::KeepAspectRatio));
 
-    // store in label's pixmap
+//    //store in label's pixmap
 //    imageLabel->setPixmap(spix);
 
-    // more concisely, can collapse the previous three lines into one:
-//    picImageLabel->setPixmap(pix.transformed(t->rotate( 45 )).scaled(pix.width(), pix.height(), Qt::KeepAspectRatio));
+//    //more concisely, can collapse the previous three lines into one:
+//    imageLabel->setPixmap(pix.transformed(t->rotate( 45 )).scaled(pix.width(), pix.height(), Qt::KeepAspectRatio));
+
+    QPixmap pix(*imageLabel->pixmap());
+    QMatrix matrix;
+    matrix.rotate(90);
+    pix = pix.transformed(matrix);
+
+    int w = image.width();
+    int h = image.height();
+
+    QTransform *t = new QTransform;
+    image = image.transformed(t->rotate(90)).scaled(h, w, Qt::KeepAspectRatio);
+    imageLabel->setPixmap(pix.scaled(h, w, Qt::KeepAspectRatio)); //will this continue to be a thing when we have changes something?
+    imageLabel->setFixedSize(h, w);
+
     pictureChanged = true;
 }
 
@@ -717,10 +730,11 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if(validCrop == true)
     {
-    origin = event->pos();
+        origin = event->pos();
+        qDebug() << "origin " << event->pos();
 
-    rubberBand->setGeometry(QRect(origin, QSize()));
-    rubberBand->show();
+        rubberBand->setGeometry(QRect(origin, QSize()));
+        rubberBand->show();
     }
     qDebug() << "mouse press   " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
 }
@@ -729,7 +743,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if(validCrop == true)
     {
-    rubberBand->setGeometry(QRect(origin, event->pos()).normalized());
+        rubberBand->setGeometry(QRect(origin, event->pos()).normalized());
     }
 }
 
@@ -737,16 +751,18 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
 {
     if(validCrop == true)
     {
-    rubberBand->hide();
+        rubberBand->hide();
 
-    qDebug() << "mouse release " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
+        qDebug() << "mouse release " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
 
-    imageLabel->setPixmap(QPixmap::fromImage(image).copy(QRect(origin, event->pos()).normalized()));
-    imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
-    pictureChanged = true;
+//        image = image.copy(QRect(origin, event->pos()).normalized()); //how bout this?//the answer is no.
+        imageLabel->setPixmap(QPixmap::fromImage(image).copy(QRect(origin, event->pos()).normalized()));//.copy(QRect(origin, event->pos()).normalized()));
+        imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
 
-    delete rubberBand;
-    validCrop = false;
+        pictureChanged = true;
+
+        delete rubberBand;
+        validCrop = false;
     }
 }
 

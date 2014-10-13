@@ -12,6 +12,7 @@
 #include <QPixmap>
 #include <QtDebug>
 #include <QRubberBand>
+#include <QMatrix>
 #include "pictureedits.h"
 #include "resizewindow.h"
 #include "xmlparser.h"
@@ -27,6 +28,7 @@ class QScrollBar;
 class QPlainTextEdit;
 class QPixmap;
 class QRubberBand;
+class QMatrix;
 QT_END_NAMESPACE
 
 namespace Ui {

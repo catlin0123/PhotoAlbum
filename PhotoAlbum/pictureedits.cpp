@@ -186,7 +186,7 @@ void pictureedits::sharpen(int i)
     //  0 -1  0
     // -1  5 -1
     //  0 -1  0
-    int sharpenVal = i;
+    int sharpenVal = 5;
     QImage sharpImage(*picImage);
     for(int x = 1; x < picImage->width() - 1; x++)
     {
@@ -221,6 +221,8 @@ void pictureedits::sharpen(int i)
         }
     }
 
+    *picImage = sharpImage;
+
     // store image in label's pixmap
     //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
@@ -237,6 +239,8 @@ void pictureedits::smooth(int i)
 
     if(i==0) i = 10;
     i = i/10;
+
+    i = 1;
 
     // smooth the image prior to display
     QImage smoothImage(*picImage);
@@ -258,6 +262,8 @@ void pictureedits::smooth(int i)
             smoothImage.setPixel(x, y, qRgb(r / (9*i), g / (9*i), b / (9*i)));
         }
     }
+
+    *picImage = smoothImage;
 
     // store image in label's pixmap
     //setFixedSize(image.size());		// size label to pixmap (may be too large for screen)

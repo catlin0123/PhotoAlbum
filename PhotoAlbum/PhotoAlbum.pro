@@ -17,7 +17,7 @@ SOURCES += main.cpp\
     xmlparser.cpp \
     pictureedits.cpp \
     resizewindow.cpp \
-    cropfunction.cpp
+    descriptionwindow.cpp
 
 #RESOURCES = mainwindow.qrc #possibly. but we dont have one, so.
 
@@ -26,11 +26,12 @@ HEADERS  += mainwindow.h \
     Photo.h \
     pictureedits.h \
     resizewindow.h \
-    cropfunction.h
+    descriptionwindow.h
 
 FORMS    += mainwindow.ui \
     pictureedits.ui \
-    resizewindow.ui
+    resizewindow.ui \
+    descriptionwindow.ui
 
 RESOURCES += \
     Resources.qrc

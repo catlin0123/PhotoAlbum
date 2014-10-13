@@ -13,62 +13,59 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QTextEdit>
-#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_DescriptionWindow
 {
 public:
+    QDialogButtonBox *buttonBox;
     QLabel *label;
     QLabel *label_2;
     QLineEdit *titleEdit;
     QTextEdit *descriptionEdit;
-    QPushButton *OKButton;
-    QPushButton *cancelButton;
 
-    void setupUi(QWidget *DescriptionWindow)
+    void setupUi(QDialog *DescriptionWindow)
     {
         if (DescriptionWindow->objectName().isEmpty())
             DescriptionWindow->setObjectName(QStringLiteral("DescriptionWindow"));
-        DescriptionWindow->resize(445, 227);
+        DescriptionWindow->resize(409, 237);
+        buttonBox = new QDialogButtonBox(DescriptionWindow);
+        buttonBox->setObjectName(QStringLiteral("buttonBox"));
+        buttonBox->setGeometry(QRect(170, 180, 221, 41));
+        buttonBox->setOrientation(Qt::Horizontal);
+        buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         label = new QLabel(DescriptionWindow);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(30, 20, 46, 13));
+        label->setGeometry(QRect(20, 20, 46, 13));
         label_2 = new QLabel(DescriptionWindow);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(30, 50, 61, 16));
+        label_2->setGeometry(QRect(20, 50, 61, 16));
         titleEdit = new QLineEdit(DescriptionWindow);
         titleEdit->setObjectName(QStringLiteral("titleEdit"));
-        titleEdit->setGeometry(QRect(100, 20, 311, 20));
+        titleEdit->setGeometry(QRect(100, 20, 291, 20));
         descriptionEdit = new QTextEdit(DescriptionWindow);
         descriptionEdit->setObjectName(QStringLiteral("descriptionEdit"));
-        descriptionEdit->setGeometry(QRect(100, 50, 311, 121));
-        OKButton = new QPushButton(DescriptionWindow);
-        OKButton->setObjectName(QStringLiteral("OKButton"));
-        OKButton->setGeometry(QRect(250, 190, 75, 23));
-        OKButton->setDefault(true);
-        cancelButton = new QPushButton(DescriptionWindow);
-        cancelButton->setObjectName(QStringLiteral("cancelButton"));
-        cancelButton->setGeometry(QRect(340, 190, 75, 23));
+        descriptionEdit->setGeometry(QRect(100, 50, 291, 131));
 
         retranslateUi(DescriptionWindow);
+        QObject::connect(buttonBox, SIGNAL(accepted()), DescriptionWindow, SLOT(accept()));
+        QObject::connect(buttonBox, SIGNAL(rejected()), DescriptionWindow, SLOT(reject()));
 
         QMetaObject::connectSlotsByName(DescriptionWindow);
     } // setupUi
 
-    void retranslateUi(QWidget *DescriptionWindow)
+    void retranslateUi(QDialog *DescriptionWindow)
     {
-        DescriptionWindow->setWindowTitle(QApplication::translate("DescriptionWindow", "Form", 0));
+        DescriptionWindow->setWindowTitle(QApplication::translate("DescriptionWindow", "Dialog", 0));
         label->setText(QApplication::translate("DescriptionWindow", "Title", 0));
         label_2->setText(QApplication::translate("DescriptionWindow", "Description", 0));
-        OKButton->setText(QApplication::translate("DescriptionWindow", "OK", 0));
-        cancelButton->setText(QApplication::translate("DescriptionWindow", "Cancel", 0));
     } // retranslateUi
 
 };

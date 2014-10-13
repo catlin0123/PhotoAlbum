@@ -1,30 +1,30 @@
 #ifndef DESCRIPTIONWINDOW_H
 #define DESCRIPTIONWINDOW_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class DescriptionWindow;
 }
 
-class DescriptionWindow : public QWidget
+class DescriptionWindow : public QDialog
 {
     Q_OBJECT
 
 public:
 //    explicit DescriptionWindow(QWidget *parent = 0);
+
     explicit DescriptionWindow(QString *description, QString *title);
     ~DescriptionWindow();
 
-private slots:
+public slots:
     void setImageDescription();
-    void cancelClicked();
 
 private:
     Ui::DescriptionWindow *ui;
 
     QString *localDescription;
-       QString *localTitle;
+    QString *localTitle;
 };
 
 #endif // DESCRIPTIONWINDOW_H

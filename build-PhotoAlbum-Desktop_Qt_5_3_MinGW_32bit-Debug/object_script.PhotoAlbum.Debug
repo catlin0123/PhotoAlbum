@@ -4,8 +4,8 @@ INPUT(
 ./debug\xmlparser.o
 ./debug\pictureedits.o
 ./debug\resizewindow.o
-./debug\cropfunction.o
 ./debug\descriptionwindow.o
+./debug\qrc_Resources.o
 ./debug\moc_mainwindow.o
 ./debug\moc_pictureedits.o
 ./debug\moc_resizewindow.o

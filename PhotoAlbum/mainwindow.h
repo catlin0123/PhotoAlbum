@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include <QtGui>
 #include <QLabel>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -14,8 +13,8 @@
 #include <QRubberBand>
 #include "pictureedits.h"
 #include "resizewindow.h"
-#include "cropfunction.h"
 #include "xmlparser.h"
+#include "descriptionwindow.h"
 #include "Photo.h"
 
 QT_BEGIN_NAMESPACE
@@ -41,7 +40,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    //is this the right place?
     void mousePressEvent( QMouseEvent *event );
     void mouseMoveEvent( QMouseEvent *event );
     void mouseReleaseEvent( QMouseEvent *event );
@@ -62,10 +60,11 @@ private slots:
     void moveForward();
     void moveBackward();
 
-    void zoomIn();
-    void zoomOut();
-    void normalSize();
-    void fitToWindow();
+//    void zoomIn();
+//    void zoomOut();
+//    void normalSize();
+//    void fitToWindow();
+
     void about();
     void balance();
     void rotate();
@@ -81,7 +80,7 @@ private:
     void createStatusBar();
     void updateActions();
     void enableImageEdits(bool enable);
-    void scaleImage(double factor);
+//    void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
     QLabel *imageLabel;
@@ -103,10 +102,11 @@ private:
     QAction *moveForwardAct;
     QAction *moveBackwardAct;
 
-    QAction *zoomInAct;
-    QAction *zoomOutAct;
-    QAction *normalSizeAct;
-    QAction *fitToWindowAct;
+//    QAction *zoomInAct;
+//    QAction *zoomOutAct;
+//    QAction *normalSizeAct;
+//    QAction *fitToWindowAct;
+
     QAction *aboutAct;
     QAction *balanceAct;
     QAction *rotateAct;
@@ -115,17 +115,17 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
-    QMenu *viewMenu;
+//    QMenu *viewMenu;
     QMenu *helpMenu;
     QMenu *imageMenu;
 
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
-    QToolBar *viewToolBar;
+//    QToolBar *viewToolBar;
 
     pictureedits *balanceWidget;
     ResizeWindow *resizeDialog;
-//    CropFunction *cropFunction;
+    DescriptionWindow *descriptionDialog;
 
     QRubberBand *rubberBand;
     QPoint origin;

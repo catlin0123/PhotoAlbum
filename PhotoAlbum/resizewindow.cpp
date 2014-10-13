@@ -27,7 +27,11 @@ void ResizeWindow::resetImageSize()
 //    resizeImage->width() = ui->widthSpinBox->value();
 //    resizeImage->height() = ui->heightSpinBox->value();
 
-//    resizeImageLabel->setPixmap(QPixmap::fromImage(*resizeImage));
+//    QImage temp = resizeImage->scaled(ui->widthSpinBox->value(), ui->heightSpinBox->value());
+//    resizeImageLabel->setPixmap((QPixmap::fromImage(temp)));
+    resizeImageLabel->setFixedSize(ui->widthSpinBox->value(), ui->heightSpinBox->value());
+
+    //            ->scaled(ui->widthSpinBox->value(), ui->heightSpinBox->value())));
 
 //    delete ui; //is this. okay. is this okay.
 }

@@ -49,9 +49,13 @@ public:
         heightSpinBox = new QSpinBox(ResizeWindow);
         heightSpinBox->setObjectName(QStringLiteral("heightSpinBox"));
         heightSpinBox->setGeometry(QRect(100, 50, 81, 22));
+        heightSpinBox->setMinimum(1);
+        heightSpinBox->setMaximum(2000);
         widthSpinBox = new QSpinBox(ResizeWindow);
         widthSpinBox->setObjectName(QStringLiteral("widthSpinBox"));
         widthSpinBox->setGeometry(QRect(100, 100, 81, 22));
+        widthSpinBox->setMinimum(1);
+        widthSpinBox->setMaximum(2000);
 
         retranslateUi(ResizeWindow);
         QObject::connect(buttonBox, SIGNAL(accepted()), ResizeWindow, SLOT(accept()));

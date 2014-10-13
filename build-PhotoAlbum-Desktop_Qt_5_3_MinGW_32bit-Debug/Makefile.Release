@@ -1336,9 +1336,9 @@ release/xmlparser.o: ../PhotoAlbum/xmlparser.cpp ../PhotoAlbum/xmlparser.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtXml/qdom.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtXml/qxml.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtXml/qtxmlversion.h \
+		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtCore/QString \
 		../PhotoAlbum/Photo.h \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtCore/QDate \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtCore/QString
+		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtCore/QDate
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\xmlparser.o ..\PhotoAlbum\xmlparser.cpp
 
 release/pictureedits.o: ../PhotoAlbum/pictureedits.cpp ../PhotoAlbum/pictureedits.h \
@@ -1655,9 +1655,6 @@ release/resizewindow.o: ../PhotoAlbum/resizewindow.cpp ../PhotoAlbum/resizewindo
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qtabbar.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qrubberband.h \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QPushButton \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qpushbutton.h \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qabstractbutton.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QSpinBox \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qspinbox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\resizewindow.o ..\PhotoAlbum\resizewindow.cpp
@@ -1917,10 +1914,6 @@ release/descriptionwindow.o: ../PhotoAlbum/descriptionwindow.cpp ../PhotoAlbum/d
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtGui/qinputmethod.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QButtonGroup \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qbuttongroup.h \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QDialog \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qdialog.h \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QDialogButtonBox \
-		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qdialogbuttonbox.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QHeaderView \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qheaderview.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qabstractitemview.h \
@@ -1947,6 +1940,9 @@ release/descriptionwindow.o: ../PhotoAlbum/descriptionwindow.cpp ../PhotoAlbum/d
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtGui/qtextformat.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtGui/qpen.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QPushButton \
+		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qpushbutton.h \
+		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qabstractbutton.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/QTextEdit \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtWidgets/qtextedit.h \
 		C:/Qt/Qt5.3.1/5.3/mingw482_32/include/QtGui/qtextdocument.h

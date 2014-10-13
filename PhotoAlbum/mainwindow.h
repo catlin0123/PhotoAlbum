@@ -1,3 +1,6 @@
+/******************************************************************************
+File: This file contains the header information for the MainWindow class.
+ *****************************************************************************/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -90,6 +93,7 @@ private:
 //    void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
+    //widgets that make up the main window
     QLabel *imageLabel;
     QImage image;
     QScrollArea *scrollArea;
@@ -98,6 +102,7 @@ private:
     QWidget *widget;
     double scaleFactor;
 
+    //actions
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
@@ -123,22 +128,28 @@ private:
     QAction *resizeAct;
     QAction *cropAct;
 
+    //menus
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *helpMenu;
     QMenu *imageMenu;
 
+    //toolbars
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
 
+    //dialog boxes
     pictureedits *balanceWidget;
     ResizeWindow *resizeDialog;
     DescriptionWindow *descriptionDialog;
 
+    //used for cropping
     QRubberBand *rubberBand;
     QPoint origin;
-
     bool validCrop;
+
+    //used for file management
+    //and album management
     bool pictureChanged;
     bool albumChanged;
     bool newFile;

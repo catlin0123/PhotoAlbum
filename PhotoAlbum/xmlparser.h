@@ -1,3 +1,6 @@
+/******************************************************************************
+File: This file contains the header information for the Parser class.
+ *****************************************************************************/
 #ifndef XMLPARSER_H
 #define XMLPARSER_H
 

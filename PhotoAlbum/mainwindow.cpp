@@ -1,54 +1,77 @@
+/******************************************************************************
+File: This file contains the implementation for the MainWindow class.
+ *****************************************************************************/
 #include <QtGui>
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Creates everything that is shown in the main window. Connects the
+    signals and slots as needed.
+Parameters: parent - the parent of the MainWindow
+ *****************************************************************************/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    //initialize some variabled
     validCrop = false;
     pictureChanged = false;
     albumChanged = false;
     newFile = true;
     currentPicture = 0;
 
+    //set up the label
     ui->setupUi(this);
     imageLabel = new QLabel;
     imageLabel->setBackgroundRole(QPalette::Base);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
 
+    //set up scrolling
     scrollArea = new QScrollArea;
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
 
+    //create the decription
     descriptionLabel = new QLabel;
     descriptionLabel->setMinimumHeight(40);
     descriptionLabel->setText("Description:\nLocation:\nDate:");
 
+    //set the cnetral widget
     widget = new QWidget;
     layout = new QVBoxLayout(widget);
     layout->addWidget(scrollArea);
     layout->addWidget(descriptionLabel);
     setCentralWidget(widget);
 
+    //create actions, menus, toolbars, and the status bar
     createActions();
     createMenus();
     createToolBars();
     createStatusBar();
 
+    //set up dialogs
     this->balanceWidget = new pictureedits(&image, imageLabel);
     this->resizeDialog = new ResizeWindow(&image, imageLabel);
     this->descriptionDialog = new DescriptionWindow();
     connect(descriptionDialog, SIGNAL(descriptionChanged()), this, SLOT(updateDescription()));
 
+    //set title and size
     setWindowTitle(tr("Photo Album"));
     resize(800, 600);
 
     this->ui->mainToolBar->hide();
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Creates a new album. First it checks if the user would like to
+    save current changes if there are any and then clears the list of photos
+    and sets the image to an empty image. Finally enabled and disables things
+    as necessary.
+ *****************************************************************************/
 void MainWindow::newAlbum()
 {
     if (pictureChanged || albumChanged)
@@ -69,12 +92,19 @@ void MainWindow::newAlbum()
                 break;
         }
     }
+    //create new albums
     album = vector<Photo>();
+
+    //set the image correctly
     image = QImage();
     newFile = true;
     imageLabel->setPixmap(QPixmap::fromImage(image));
     imageLabel->resize(image.width(), image.height());
+
+    //set the descirption
     setDescription();
+
+    //set enabled as necessary
     enableImageEdits(false);
     deletePhotoAct->setEnabled(false);
     updateMoveEnables();
@@ -82,8 +112,14 @@ void MainWindow::newAlbum()
     saveAsAct->setEnabled(false);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Opens a saved album. First asks the user if he/she would like to
+    save changes, then gets a file from the user, parses it, then opens it.
+ *****************************************************************************/
 void MainWindow::open()
 {
+    //ask the user if they would like to save changes and then save them
     if (pictureChanged || albumChanged)
     {
         int response = QMessageBox::information(this, tr("Save"),
@@ -98,7 +134,7 @@ void MainWindow::open()
             case QMessageBox::Discard:
                 break;
             case QMessageBox::Cancel:
-                return;
+                return; //don't open a file just return
                 break;
         }
     }
@@ -106,12 +142,17 @@ void MainWindow::open()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
     {
+        //set the filename
         filename = fileName;
         newFile = false;
+
+        //parse the file
         QFile* file = new QFile(filename);
         Parser parse;
         currentPicture = 0;
         album = parse.GetPhotoAlbums(file);
+
+        //set the current image and set enables as needed
         if (album.size() != 0)
         {
             image = QImage(album[0].FileName);
@@ -124,72 +165,100 @@ void MainWindow::open()
         else
         {
             enableImageEdits(false);
+            deletePhotoAct->setEnabled(false);
+            editDescriptionAct->setEnabled(false);
         }
         if (image.isNull())
         {
             QMessageBox::information(this, tr("Image Viewer"), tr("Cannot load %1.").arg(filename));
             return;
         }
-
         imageLabel->setPixmap(QPixmap::fromImage(image));
         scaleFactor = 1.0;
-
         updateActions();
     }
+    //update enabled as needed
     updateMoveEnables();
     setDescription();
     saveAct->setEnabled(false);
     saveAsAct->setEnabled(false);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Saves an xml file if it has a filename, otherwise calls save as
+    which will prompt the user to get a filename.
+ *****************************************************************************/
 void MainWindow::save()
 {
     if (newFile)
     {
+        //since it doesn't have a file name use save as
         saveAs();
     }
     else
     {
+        //saves the picture if needed
         if (pictureChanged)
         {
             image.save(album[currentPicture].FileName);
         }
+        //intialize the file.
         QFile file;
         newFile = false;
         file.setFileName(filename);
         file.open(QIODevice::ReadWrite);
+
+        //parse the file
         Parser parse;
         QString string = parse.ConvertList(album);
         QTextStream stream(&file);
+
+        //output the file
         stream << string;
         file.close();
         albumChanged = false;
     }
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Saves the picture if needed, and then saves the xml file format
+    of the album.
+ *****************************************************************************/
 void MainWindow::saveAs()
 {
     if (pictureChanged)
     {
+        //save the picture
         image.save(album[currentPicture].FileName);
     }
-    //save the album and close the program
+    //save the album
     QFile file;
     filename = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("XML files (*.xml)"));
     newFile = false;
     file.setFileName(filename);
     file.open(QIODevice::ReadWrite);
+
+    //parse the album to get the xml format
     Parser parse;
     QString string = parse.ConvertList(album);
+
+    //output it to file
     QTextStream stream(&file);
     stream << string;
     file.close();
     albumChanged = false;
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: If there are changes to the album save ask the user if they want
+    to save changes, and then exit the program. If not just exit.
+ *****************************************************************************/
 void MainWindow::close()
 {
-    if (albumChanged)
+    if (albumChanged)//ask user to save changes
     {
         int response = QMessageBox::information(this, tr("Save"),
                 tr("Save changes before closing?"),
@@ -199,31 +268,7 @@ void MainWindow::close()
         {
             case QMessageBox::Save :
             {
-                if (pictureChanged)
-                {
-                    image.save(album[currentPicture].FileName);
-                }
-                //save the album and close the program
-                QFile file;
-                if (newFile)
-                {
-                    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("XML files (*.xml)"));
-                    file.setFileName(fileName);
-                    file.open(QIODevice::ReadWrite);
-                }
-                else
-                {
-                    file.setFileName(filename);
-                    file.open(QIODevice::ReadWrite);
-                }
-
-                //get the string to output
-                Parser parse;
-                QString string = parse.ConvertList(album);
-                QTextStream stream(&file);
-                stream << string;
-                file.close();
-
+                save();
                 //quit the program
                 QApplication::quit();
                 break;
@@ -243,40 +288,62 @@ void MainWindow::close()
     }
     else
     {
+        //quit program
         QApplication::quit();
     }
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Adds a photo to the back of the photo album. Does so by prompting
+    the user for the photo they would like to add and then opens it and sets
+    the image to be the last image.
+ *****************************************************************************/
 void MainWindow::addPhoto()
 {
     Photo photo;
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("Image Files (*.png *.jpg *.bmp)"));
     if (fileName != "")
     {
+        //set the image
         image = QImage(fileName);
         imageLabel->setPixmap(QPixmap::fromImage(image));
         imageLabel->resize(image.width(), image.height());
+
+        //since a photo was added image edits is possible
         enableImageEdits(true);
         photo.FileName = fileName;
+
+        //add photo to end of list and update current picture
         album.push_back(photo);
         currentPicture = album.size() - 1;
         albumChanged = true;
+
+        //set the description
         setDescription();
     }
     if (album.size() != 0)
     {
+        //enable some of the things
         deletePhotoAct->setEnabled(true);
         editDescriptionAct->setEnabled(true);
     }
+    //set enables as needed
     updateMoveEnables();
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Deletes the current photo from the album, after prompting the user
+    if they want to.
+ *****************************************************************************/
 void MainWindow::deletePhoto()
 {
     if (album.size() != 0)
     {
+        //prompt the user to delete the phtot
         int response = QMessageBox::information(this, tr("Delete"),
                 tr("Delete current photo from album?"),
                 QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
@@ -290,6 +357,7 @@ void MainWindow::deletePhoto()
                     album[i + 1] = album[i];
                 }
                 album.pop_back();
+
                 //open next photo for viewing
                 if (currentPicture == album.size())
                 {
@@ -297,12 +365,14 @@ void MainWindow::deletePhoto()
                 }
                 if (album.size() != 0 )
                 {
+                    //set the next image in the list
                     image = QImage(album[currentPicture].FileName);
                     imageLabel->setPixmap(QPixmap::fromImage(image));
                     imageLabel->resize(image.width(), image.height());
                 }
                 else
                 {
+                    //empty album set to empty picture
                     image = QImage();
                     imageLabel->setPixmap(QPixmap::fromImage(image));
                     imageLabel->resize(image.width(),image.height());
@@ -316,39 +386,64 @@ void MainWindow::deletePhoto()
     }
     if (album.size() == 0)
     {
+        //check enables
         deletePhotoAct->setEnabled(false);
         editDescriptionAct->setEnabled(false);
     }
+    //enable as necessary
     updateMoveEnables();
     setDescription();
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Brings up the dialog box prefilled with the description
+    information already within it.
+ *****************************************************************************/
 void MainWindow::editDescription()
 {
+    //set the information to be prefilled
     descriptionDialog->location = &album[currentPicture].Location;
     descriptionDialog->description = &album[currentPicture].Description;
     descriptionDialog->date = &album[currentPicture].Date;
+    //show dialog
     descriptionDialog->show();
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Gets the information from the dialog box, and then sets the
+    description label to have that information within it.
+ *****************************************************************************/
 void MainWindow::updateDescription()
 {
+    //get information from the dialog box
     album[currentPicture].Description = *(descriptionDialog->description);
     album[currentPicture].Location = *(descriptionDialog->location);
     album[currentPicture].Date = *(descriptionDialog->date);
     albumChanged = true;
+
+    //set the label of the current window to have appropriate information
     setDescription();
+
+    //allow for saving
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: moves to the next photo within the album after asking to save the
+    photo if there were changes.
+ *****************************************************************************/
 void MainWindow::nextPhoto()
 {
+    //can only move to the next photo if not at the end
     if (currentPicture != album.size() - 1 && album.size() != 0)
     {
-        if (pictureChanged)
+        if (pictureChanged) //ask the user to save the file
         {
             int response = QMessageBox::information(this, tr("Save"),
                     tr("Save changes to photo?"),
@@ -371,22 +466,30 @@ void MainWindow::nextPhoto()
                     break;
             }
         }
+        //move to the next picture
         currentPicture = currentPicture + 1;
         image = QImage(album[currentPicture].FileName);
         imageLabel->setPixmap(QPixmap::fromImage(image));
         imageLabel->resize(image.width(), image.height());
         pictureChanged = false;
     }
+    //update enables
     updateMoveEnables();
     setDescription();
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Moves to the previous photo within the album after asking to save
+    the photo if there were changes
+ *****************************************************************************/
 void MainWindow::previousPhoto()
 {
     if (currentPicture != 0)
     {
         if (pictureChanged)
         {
+            //ask to save the photo
             int response = QMessageBox::information(this, tr("Save"),
                     tr("Save changes to photo?"),
                     QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
@@ -408,16 +511,22 @@ void MainWindow::previousPhoto()
                     break;
             }
         }
+        //move back an image.
         currentPicture = currentPicture - 1;
         image = QImage(album[currentPicture].FileName);
         imageLabel->setPixmap(QPixmap::fromImage(image));
         imageLabel->resize(image.width(), image.height());
         pictureChanged = false;
     }
+    //update enables as necessary
     updateMoveEnables();
     setDescription();
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Moves the photo forward in the album. Updates enables as needed.
+ *****************************************************************************/
 void MainWindow::moveForward()
 {
     //make sure we don't step off the end of the vector
@@ -430,11 +539,16 @@ void MainWindow::moveForward()
         albumChanged = true;
         currentPicture = currentPicture + 1;
     }
+    //update enables
     updateMoveEnables();
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Moves the photo backward in the album. Updates enables as needed.
+ *****************************************************************************/
 void MainWindow::moveBackward()
 {
     //check that we don't step off the end of the vector
@@ -446,11 +560,16 @@ void MainWindow::moveBackward()
         albumChanged = true;
         currentPicture = currentPicture - 1;
     }
+    //update enables
     updateMoveEnables();
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Gives a basic about for the the program.
+ *****************************************************************************/
 void MainWindow::about()
 {
     QString str;
@@ -469,6 +588,15 @@ void MainWindow::balance()
     pictureChanged = true;
 }
 
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Creates the different actions needed for the program. This
+    includes new, open, save, save as, exit, add photo, delete photo, edit
+    description, next photo, previous photo, move forward, move backward,
+    rotate, resize, crop, about, and balance actions. For each it sets the
+    icon if there is one, the text, keyboard short cuts, enables and disables
+    them initially, and connects them to signals as needed.
+ *****************************************************************************/
 void MainWindow::createActions()
 {
     newAct = new QAction(QIcon(":/icon/images/new.png"), tr("&New..."), this);
@@ -567,6 +695,11 @@ void MainWindow::createActions()
     connect(balanceAct, SIGNAL(triggered()), this, SLOT(balance()));
 }
 
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Creates the menus include file, edit, image, and help menus.
+    For each of these it add appropriate actions.
+ *****************************************************************************/
 void MainWindow::createMenus()
 {
     fileMenu = new QMenu(tr("&File"), this);
@@ -605,6 +738,11 @@ void MainWindow::createMenus()
     menuBar()->addMenu(helpMenu);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Creates the toolbars including file, edit, and help menus.
+    For each of these it add appropriate actions.
+ *****************************************************************************/
 void MainWindow::createToolBars()
 {
     fileToolBar = addToolBar(tr("File"));
@@ -755,6 +893,11 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
     }
 }
 
+/******************************************************************************
+Author: Caitlin Taggart
+Description: Allows to enable or disable image actions. (rotate, resize, crop,
+    and balance)
+ *****************************************************************************/
 void MainWindow::enableImageEdits(bool enable)
 {
    rotateAct->setEnabled(enable);
@@ -764,9 +907,15 @@ void MainWindow::enableImageEdits(bool enable)
    balanceAct->setEnabled(enable);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Updates the enables of move forward, move backward, next photo
+    and previous photo. It does this by checking where in the album we are
+    and how many photos there are in the album.
+ *****************************************************************************/
 void MainWindow::updateMoveEnables()
 {
-    if (album.size() == 0)
+    if (album.size() == 0)//if there are no photos disable them all
     {
         moveForwardAct->setEnabled(false);
         nextPhotoAct->setEnabled(false);
@@ -775,11 +924,11 @@ void MainWindow::updateMoveEnables()
         return;
     }
 
-    if (currentPicture + 1 == album.size())
+    if (currentPicture + 1 == album.size())//should only move backward
     {
         moveForwardAct->setEnabled(false);
         nextPhotoAct->setEnabled(false);
-        if (album.size() == 1)
+        if (album.size() == 1) //unless of course the album size is one
         {
             previousPhotoAct->setEnabled(false);
             moveBackwardAct->setEnabled(false);
@@ -792,11 +941,11 @@ void MainWindow::updateMoveEnables()
         return;
     }
 
-    if (currentPicture == 0)
+    if (currentPicture == 0)//should only move forward
     {
         moveBackwardAct->setEnabled(false);
         previousPhotoAct->setEnabled(false);
-        if (album.size() == 1)
+        if (album.size() == 1)//unless of course the album size is one
         {
             nextPhotoAct->setEnabled(false);
             moveForwardAct->setEnabled(false);
@@ -808,20 +957,30 @@ void MainWindow::updateMoveEnables()
         }
         return;
     }
+
+    //if neither of these are the case, then enable them all.
     moveBackwardAct->setEnabled(true);
     previousPhotoAct->setEnabled(true);
     nextPhotoAct->setEnabled(true);
     moveForwardAct->setEnabled(true);
 }
 
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Sets the description of the label based on how many photos are
+    in the album.
+ *****************************************************************************/
 void MainWindow::setDescription()
 {
+    //set it to be empty, because there is no photo
     if (album.size() == 0)
     {
         descriptionLabel->setText("Description:\nLocation:\nDate:");
     }
     else
     {
+        //get the current photo and use the information from it
+        //to se the description label.
         Photo photo = album[currentPicture];
         QString str = "Description: " + photo.Description + "\n";
         str += "Locaiton: " + photo.Location + "\n";
@@ -830,6 +989,10 @@ void MainWindow::setDescription()
     }
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: The descructor for the main window class.
+ *****************************************************************************/
 MainWindow::~MainWindow()
 {
     delete ui;

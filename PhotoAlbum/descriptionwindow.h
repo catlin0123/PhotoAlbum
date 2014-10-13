@@ -1,3 +1,7 @@
+/******************************************************************************
+File: This file contains the header information for the DescriptionWindow
+    class.
+ *****************************************************************************/
 #ifndef DESCRIPTIONWINDOW_H
 #define DESCRIPTIONWINDOW_H
 
@@ -12,9 +16,12 @@ class DescriptionWindow : public QDialog
     Q_OBJECT
 
 public:
+    //used to set and store the description, location, and date
+    //for the widget and for use by the main window.
     QString* description;
     QString* location;
     QDate* date;
+
     void show();
     explicit DescriptionWindow();
     ~DescriptionWindow();

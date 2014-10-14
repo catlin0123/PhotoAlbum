@@ -567,14 +567,38 @@ void MainWindow::moveBackward()
 }
 
 /******************************************************************************
-Author: Caitlin Taggart
+Author: Caitlin Taggart and Kelsey Bellew
 Description: Gives a basic about for the the program.
  *****************************************************************************/
 void MainWindow::about()
 {
     QString str;
-    str = "Photo Album allows you to add, delete, edit, and add a description to photos.";
+    str = "Photo Album allows you to add, delete, edit, and add a description to photos."
+            "\n\nPhoto Album was written by Kelsey Bellew and Caitlin Taggart, and uses"
+            " a number of Qt/C++ functions from Dr. Weiss' CSC421 website.";
     QMessageBox::about(this, tr("About Photo Album"), str);
+}
+
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Gives a basic usage for the the program.
+ *****************************************************************************/
+void MainWindow::usage()
+{
+    QString str;
+    str = "Photo Album can be used to create or open a photo album in the"
+            " form of a .xml file. \n\nTo start a new photo album, either click"
+            " 'New Photo Album' or 'Add Image'. To add an image to a current"
+            " photo album, select 'Add Image'. To edit the image, use the"
+            " 'Edit' menu, and select from 'Edit Menu' (which includes"
+            " brighten, edge, contrast, gamma, negate, smooth, and sharpen),"
+            " crop, or resize. \n\nTo move an image forward in the album, select"
+            " 'Move Forward'. To move an image backwards in the album, select"
+            " 'Move Backard'. To go to the next picture in the album, select"
+            " 'Next Image'. To go to the previous picture in the album,"
+            " select 'Previous Image'. To save the album, select 'Save' or"
+            " 'Save As'. To close the album, select 'Exit'. ";
+    QMessageBox::about(this, tr("Photo Album Usage"), str);
 }
 
 /******************************************************************************
@@ -693,6 +717,10 @@ void MainWindow::createActions()
     aboutAct->setStatusTip(tr("About this program"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
+    usageAct = new QAction(tr("&Usage"), this);
+    usageAct->setStatusTip(tr("Usage of this program"));
+    connect(usageAct, SIGNAL(triggered()), this, SLOT(usage()));
+
     balanceAct = new QAction(tr("Edit Picture"), this);
     balanceAct->setStatusTip(tr("Open picture edit menu"));
     balanceAct->setEnabled(false);
@@ -733,6 +761,7 @@ void MainWindow::createMenus()
     imageMenu->addAction(cropAct);
 
     helpMenu = new QMenu(tr("&Help"), this);
+    helpMenu->addAction(usageAct);
     helpMenu->addAction(aboutAct);
 
     menuBar()->addMenu(fileMenu);
@@ -909,62 +938,23 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
     {
         rubberBand->hide();
 
-        //set the image to the cropped version of itself, and set the imageLabel to the current image
+        //get a subimage of the image, accounting for edges
+        QPoint a(origin.x() - 10, origin.y() - 64);
+        QPoint b(event->pos().x() - 10, event->pos().y() - 64);
+        image = image.copy(QRect(a, b).normalized());
 
-//        int x1, x2, y1, y2, height, width;
-//        x1 = origin.x();
-//        x2 = event->pos().x();
-//        y1 = origin.y();
-//        y2 = event->pos().x();
-
-//        if(x1<0)
-//            x1 = 0;
-//        if(x2>image.width())
-//            x2 = image.width();
-
-//        if(y1<0)
-//            y1 = 0;
-//        if(y2>image.height())
-//            y2 = image.height();
-
-//        height = abs(x1-x2);
-//        width = abs(y1-y2);
-//        qDebug() << "height:" << height << " width:" << width;
-
-//        QImage temp = image;
-//        temp = temp.scaled(width, height);
-
-//        int i = 0;
-//        int j = 0;
-//        qDebug() << "x:" << x1 << " " << x2 << "y:" << y1 << " " << y2;
-//        for(int x = x1; x < (x2 - 1); x++)
-//        {
-//            for(int y = y1; y < (y2 - 1); y++)
-//            {
-//                qDebug() << "pixel" << x << y << "other pixel" << i << j;
-//                QRgb p = image.pixel(x, y);
-//                temp.setPixel(i, j, p);
-
-//                j++;
-//            }
-//            j = 0;
-//            i++;
-//        }
-
-//        image = temp;
-
-        image = image.copy(QRect(origin, event->pos()).normalized());
+        //set pixmap of label to cropped image and resize image
         imageLabel->setPixmap(QPixmap::fromImage(image));
-//        imageLabel->setPixmap(QPixmap::fromImage(image.copy(QRect(origin, event->pos()).normalized())));
-
-        imageLabel->resize(image.width(), image.height());
+        imageLabel->resize(image.size());
         imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
+
         pictureChanged = true;
         saveAct->setEnabled(true);
         saveAsAct->setEnabled(true);
 
         pictureChanged = true;
 
+        //delete rubber band and reset crop flag
         delete rubberBand;
         validCrop = false;
     }

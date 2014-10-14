@@ -1,0 +1,13 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\xmlparser.o
+./release\pictureedits.o
+./release\resizewindow.o
+./release\descriptionwindow.o
+./release\qrc_Resources.o
+./release\moc_mainwindow.o
+./release\moc_pictureedits.o
+./release\moc_resizewindow.o
+./release\moc_descriptionwindow.o
+);

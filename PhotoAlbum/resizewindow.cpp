@@ -45,7 +45,7 @@ Description: Resizes an image.
 void ResizeWindow::resetImageSize()
 {
     //set the size of the image label
-    resizeImageLabel->setFixedSize(ui->widthSpinBox->value(), ui->heightSpinBox->value());
+    resizeImageLabel->resize(ui->widthSpinBox->value(), ui->heightSpinBox->value());
 }
 
 /******************************************************************************

@@ -33,12 +33,12 @@ public:
 
 private slots: //was public and it was fine, but.
     void brighten(int);
-    void contrast(int);
+    void contrast();
     void edge();
-    void gamma(int);
+    void gamma();
     void negate();
-    void sharpen(int);
-    void smooth(int);
+    void sharpen();
+    void smooth();
 
 private:
     Ui::pictureedits *ui;
@@ -58,10 +58,10 @@ private:
     QImage *picImage;
 
     int brightenPrevVal = 0;
-    int gammaPrevVal = 0;
-    int contrastPrevVal = 0;
-    int sharpenPrevVal = 0;
-    int smoothPrevVal = 0;
+//    int gammaPrevVal = 0;
+//    int contrastPrevVal = 0;
+//    int sharpenPrevVal = 0;
+//    int smoothPrevVal = 0;
 
 };
 

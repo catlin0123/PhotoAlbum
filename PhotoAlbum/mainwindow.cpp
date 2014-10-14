@@ -909,11 +909,55 @@ void MainWindow::mouseReleaseEvent( QMouseEvent *event )
     {
         rubberBand->hide();
 
-        qDebug() << "mouse release " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
-
         //set the image to the cropped version of itself, and set the imageLabel to the current image
+
+//        int x1, x2, y1, y2, height, width;
+//        x1 = origin.x();
+//        x2 = event->pos().x();
+//        y1 = origin.y();
+//        y2 = event->pos().x();
+
+//        if(x1<0)
+//            x1 = 0;
+//        if(x2>image.width())
+//            x2 = image.width();
+
+//        if(y1<0)
+//            y1 = 0;
+//        if(y2>image.height())
+//            y2 = image.height();
+
+//        height = abs(x1-x2);
+//        width = abs(y1-y2);
+//        qDebug() << "height:" << height << " width:" << width;
+
+//        QImage temp = image;
+//        temp = temp.scaled(width, height);
+
+//        int i = 0;
+//        int j = 0;
+//        qDebug() << "x:" << x1 << " " << x2 << "y:" << y1 << " " << y2;
+//        for(int x = x1; x < (x2 - 1); x++)
+//        {
+//            for(int y = y1; y < (y2 - 1); y++)
+//            {
+//                qDebug() << "pixel" << x << y << "other pixel" << i << j;
+//                QRgb p = image.pixel(x, y);
+//                temp.setPixel(i, j, p);
+
+//                j++;
+//            }
+//            j = 0;
+//            i++;
+//        }
+
+//        image = temp;
+
         image = image.copy(QRect(origin, event->pos()).normalized());
         imageLabel->setPixmap(QPixmap::fromImage(image));
+//        imageLabel->setPixmap(QPixmap::fromImage(image.copy(QRect(origin, event->pos()).normalized())));
+
+        imageLabel->resize(image.width(), image.height());
         imageLabel->setGeometry(QRect(origin, event->pos()).normalized());
         pictureChanged = true;
         saveAct->setEnabled(true);

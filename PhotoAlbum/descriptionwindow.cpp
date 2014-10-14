@@ -14,7 +14,7 @@ DescriptionWindow::DescriptionWindow():
 {
     ui->setupUi(this);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(setImageDescription()));
+//    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(setImageDescription()));
 
     setWindowTitle(tr("Edit Image Description"));
 }

@@ -30,12 +30,14 @@ Description: Connects the slots that are needed for this class. This
 void pictureedits::createActions()
 {
     connect(ui->brightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(brighten(int)));
-    connect(ui->contrastSlider, SIGNAL(valueChanged(int)), this, SLOT(contrast(int)));
+//    connect(ui->contrastSlider, SIGNAL(valueChanged(int)), this, SLOT(contrast(int)));
+    connect(ui->contrastButton, SIGNAL(clicked()), this, SLOT(contrast()));
     connect(ui->edgeButton, SIGNAL(clicked()), this, SLOT(edge()));
-    connect(ui->gammaSlider, SIGNAL(valueChanged(int)), this, SLOT(gamma(int)));
+//    connect(ui->gammaSlider, SIGNAL(valueChanged(int)), this, SLOT(gamma(int)));
+    connect(ui->gammaButton, SIGNAL(clicked()), this, SLOT(gamma()));
     connect(ui->radioButton, SIGNAL(clicked()), this, SLOT(negate()));
-    connect(ui->sharpenSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sharpen(int)));
-    connect(ui->smoothSpinBox, SIGNAL(valueChanged(int)), this, SLOT(smooth(int)));
+    connect(ui->sharpenButton, SIGNAL(clicked()), this, SLOT(sharpen()));
+    connect(ui->smoothButton, SIGNAL(clicked()), this, SLOT(smooth()));
 }
 
 /******************************************************************************
@@ -84,7 +86,7 @@ Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
 Description: Applies contrast to an image.
 Paramaters: i - the current value of the associated widget
  *****************************************************************************/
-void pictureedits::contrast(int i)
+void pictureedits::contrast()
 {
     if(picImage->isNull())
     {
@@ -92,10 +94,12 @@ void pictureedits::contrast(int i)
         exit(-2);
     }
 
-    double val;
-    if(contrastPrevVal > i) val = 1/2; //so. that wasn't right.
-    if(contrastPrevVal < i) val = 2;
-    contrastPrevVal = i;
+//    double val;
+//    if(contrastPrevVal > i) val = 1/2; //so. that wasn't right.
+//    if(contrastPrevVal < i) val = 2;
+//    contrastPrevVal = i;
+
+    int contrastVal = 2;
 
     // contrast stretch image between intensity levels 64 and 192
     for(int x = 0; x < picImage->width(); x++ )
@@ -103,11 +107,11 @@ void pictureedits::contrast(int i)
         for (int y = 0; y < picImage->height(); y++)
         {
             QRgb p = picImage->pixel(x, y);
-            int r = (qRed(p) - 10) * val; //do i have to divide by 2 to get it back ish?
+            int r = (qRed(p) - 10) * contrastVal;
             if (r < 0) r = 0; else if (r > 255) r = 255;
-            int g = (qGreen(p) - 10) * val;
+            int g = (qGreen(p) - 10) * contrastVal;
             if (g < 0) g = 0; else if (g > 255) g = 255;
-            int b = (qBlue(p) - 10) * val;
+            int b = (qBlue(p) - 10) * contrastVal;
             if (b < 0) b = 0; else if (b >255) b = 255;
             picImage->setPixel(x, y, qRgb(r, g, b));
         }
@@ -155,7 +159,7 @@ Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
 Description: Applies gamma to an image.
 Paramaters: i - the current value of the associated widget
  *****************************************************************************/
-void pictureedits::gamma(int i)
+void pictureedits::gamma()
 {
     if(picImage->isNull())
     {
@@ -163,13 +167,13 @@ void pictureedits::gamma(int i)
         exit(-2);
     }
 
-    double val;
-    if(gammaPrevVal > i) val = 1.5;
-    if(gammaPrevVal < i) val = 2/3; //that also is not right. at. all.
-    gammaPrevVal = i;
+//    double val;
+//    if(gammaPrevVal > i) val = 1.5;
+//    if(gammaPrevVal < i) val = 2/3; //that also is not right. at. all.
+//    gammaPrevVal = i;
 
     // alter image gamma
-        double gamma = val;
+        double gamma = 1.5;
         for(int x = 0; x < picImage->width(); x++)
         {
             for(int y = 0; y < picImage->height(); y++)
@@ -213,7 +217,7 @@ Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
 Description: Sharpens an image.
 Paramaters: i - the current value of the associated widget
  *****************************************************************************/
-void pictureedits::sharpen(int i)
+void pictureedits::sharpen()
 {
     if(picImage->isNull())
     {
@@ -221,42 +225,49 @@ void pictureedits::sharpen(int i)
         exit(-2);
     }
 
+    int val = ui->sharpenSpinBox->value();
+    if(val == 0) return;
+    val = val/10;
+
     // sharpen the image prior to display, using
     //  0 -1  0
     // -1  5 -1
     //  0 -1  0
     int sharpenVal = 5;
     QImage sharpImage(*picImage);
-    for(int x = 1; x < picImage->width() - 1; x++)
+    for(int i = 0; i < val; i++)
     {
-        for(int y = 1; y < picImage->height() - 1; y++)
+        for(int x = 1; x < picImage->width() - 1; x++)
         {
-            QRgb p = picImage->pixel(x, y);
-            int r = sharpenVal * qRed(p);
-            int g = sharpenVal * qGreen(p);
-            int b = sharpenVal * qBlue(p);
-            p = picImage->pixel(x - 1, y);
-            r -= qRed(p);
-            g -= qGreen(p);
-            b -= qBlue(p);
-            p = picImage->pixel(x + 1, y);
-            r -= qRed(p);
-            g -= qGreen(p);
-            b -= qBlue(p);
-            p = picImage->pixel(x, y - 1);
-            r -= qRed(p);
-            g -= qGreen(p);
-            b -= qBlue(p);
-            p = picImage->pixel(x, y + 1);
-            r -= qRed(p);
-            g -= qGreen(p);
-            b -= qBlue(p);
+            for(int y = 1; y < picImage->height() - 1; y++)
+            {
+                QRgb p = picImage->pixel(x, y);
+                int r = sharpenVal * qRed(p);
+                int g = sharpenVal * qGreen(p);
+                int b = sharpenVal * qBlue(p);
+                p = picImage->pixel(x - 1, y);
+                r -= qRed(p);
+                g -= qGreen(p);
+                b -= qBlue(p);
+                p = picImage->pixel(x + 1, y);
+                r -= qRed(p);
+                g -= qGreen(p);
+                b -= qBlue(p);
+                p = picImage->pixel(x, y - 1);
+                r -= qRed(p);
+                g -= qGreen(p);
+                b -= qBlue(p);
+                p = picImage->pixel(x, y + 1);
+                r -= qRed(p);
+                g -= qGreen(p);
+                b -= qBlue(p);
 
-            if (r < 0) r = 0; else if (r > 255) r = 255;
-            if (g < 0) g = 0; else if (g > 255) g = 255;
-            if (b < 0) b = 0; else if (b > 255) b = 255;
+                if (r < 0) r = 0; else if (r > 255) r = 255;
+                if (g < 0) g = 0; else if (g > 255) g = 255;
+                if (b < 0) b = 0; else if (b > 255) b = 255;
 
-            sharpImage.setPixel(x, y, qRgb(r, g, b));
+                sharpImage.setPixel(x, y, qRgb(r, g, b));
+            }
         }
     }
 
@@ -271,7 +282,7 @@ Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
 Description: Smooths an image.
 Paramaters: i - the current value of the associated widget
  *****************************************************************************/
-void pictureedits::smooth(int i)
+void pictureedits::smooth()
 {
     if(picImage->isNull())
     {
@@ -279,29 +290,37 @@ void pictureedits::smooth(int i)
         exit(-2);
     }
 
-    if(i==0) i = 10;
-    i = i/10;
+//    if(i==0) i = 10;
+//    i = i/10;
 
-    i = 1;
+//    i = 1;
+
+    int val = ui->smoothSpinBox->value();
+    if(val == 0) return;
+    val = val/10;
 
     // smooth the image prior to display
     QImage smoothImage(*picImage);
-    for(int x = 1; x < picImage->width() - 1; x++)
+
+    for(int i = 0; i < val; i++)
     {
-        for(int y = 1; y < picImage->height() - 1; y++)
+        for(int x = 1; x < picImage->width() - 1; x++)
         {
-            int r = 0, g = 0, b = 0;
-            for(int m = -1; m <= 1; m++)
+            for(int y = 1; y < picImage->height() - 1; y++)
             {
-                for(int n = -1; n <= 1; n++)
+                int r = 0, g = 0, b = 0;
+                for(int m = -1; m <= 1; m++)
                 {
-                    QRgb p = picImage->pixel(x + m, y + n);
-                    r += qRed(p);
-                    g += qGreen(p);
-                    b += qBlue(p);
+                    for(int n = -1; n <= 1; n++)
+                    {
+                        QRgb p = picImage->pixel(x + m, y + n);
+                        r += qRed(p);
+                        g += qGreen(p);
+                        b += qBlue(p);
+                    }
                 }
+                smoothImage.setPixel(x, y, qRgb(r / (9), g / (9), b / (9)));
             }
-            smoothImage.setPixel(x, y, qRgb(r / (9*i), g / (9*i), b / (9*i)));
         }
     }
 

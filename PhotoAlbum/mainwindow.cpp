@@ -577,6 +577,10 @@ void MainWindow::about()
     QMessageBox::about(this, tr("About Photo Album"), str);
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Opens the balance window.
+ *****************************************************************************/
 void MainWindow::balance()
 {
     //show balance window
@@ -727,7 +731,6 @@ void MainWindow::createMenus()
     imageMenu->addAction(rotateAct);
     imageMenu->addAction(resizeAct);
     imageMenu->addAction(cropAct);
-    //also rotate, resize, crop.
 
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);
@@ -764,11 +767,19 @@ void MainWindow::createToolBars()
 
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Creates the Status Bar and sets an initial message.
+ *****************************************************************************/
 void MainWindow::createStatusBar()
 {
     statusBar()->showMessage(tr("Ready"));
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Updates image changing operations and sets them to enabled.
+ *****************************************************************************/
 void MainWindow::updateActions()
 {
     rotateAct->setEnabled(true);
@@ -778,37 +789,27 @@ void MainWindow::updateActions()
 }
 
 
+/******************************************************************************
+Author: Digia Plc, edited by Kelsey Bellew
+Description: Adjusts the Scroll Bar.
+ *****************************************************************************/
 void MainWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
     scrollBar->setValue(int(factor * scrollBar->value()
                             + ((factor - 1) * scrollBar->pageStep()/2)));
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Rotates the image 90 degrees right and updates the image label.
+ *****************************************************************************/
 void MainWindow::rotate()
 {
     if(image.isNull())
     {
-        qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
+        qDebug() << "image does not exist";
         exit(-2);
     }
-
-//    QPixmap pix(*imageLabel->pixmap());
-
-//    //create a Qtransform for rotation (can also use for translation and scaling)
-//    QTransform *t = new QTransform;
-
-//    //rotate pixmap by 45 degrees
-//    QPixmap rpix(pix.transformed(t->rotate(45)));
-////                image.transformed(t->rotate(45)));
-
-//    //scale to original image dimensions, retaining aspect ratio
-//    QPixmap spix(rpix.scaled(image.width(), image.height(), Qt::KeepAspectRatio));
-
-//    //store in label's pixmap
-//    imageLabel->setPixmap(spix);
-
-//    //more concisely, can collapse the previous three lines into one:
-//    imageLabel->setPixmap(pix.transformed(t->rotate( 45 )).scaled(pix.width(), pix.height(), Qt::KeepAspectRatio));
 
     //get a pixmap to rotate
     QPixmap pix(*imageLabel->pixmap());
@@ -825,12 +826,17 @@ void MainWindow::rotate()
     image = image.transformed(t->rotate(90)).scaled(h, w, Qt::KeepAspectRatio);
 
     //set imageLabel to the rotated pixmap with the correct dimesions.
-    imageLabel->setPixmap(pix.scaled(h, w, Qt::KeepAspectRatio)); //will this continue to be a thing when we have changes something?
+    imageLabel->setPixmap(pix.scaled(h, w, Qt::KeepAspectRatio));
     imageLabel->setFixedSize(h, w);
 
     pictureChanged = true;
 }
 
+
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Opens the resize window.
+ *****************************************************************************/
 void MainWindow::openResize()
 {
     //show resize window
@@ -842,6 +848,13 @@ void MainWindow::openResize()
     pictureChanged = true;
 }
 
+
+
+
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Instantiates a rubber band and sets validCrop to true.
+ *****************************************************************************/
 void MainWindow::crop()
 {
     //get a new instance of a rubberband and tell the program that we are cropping
@@ -849,6 +862,13 @@ void MainWindow::crop()
     validCrop = true;
 }
 
+
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Grabs all mouse events, and if the program is in a valid cropping
+    state, sets up the rubber band.
+Paramaters: event - the current mouse event
+ *****************************************************************************/
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     //set the origin and set up the rubberband, if rubberband exists
@@ -859,9 +879,14 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         rubberBand->setGeometry(QRect(origin, QSize()));
         rubberBand->show();
     }
-    //qDebug() << "mouse press   " << event->button() << " at " << "(" << event->x() << "," << event->y() << ")";
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: When the rubber band is being moved around, this function sets
+    the geometry of the rubber band.
+Paramaters: event - the current mouse event
+ *****************************************************************************/
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if(validCrop == true)
@@ -870,6 +895,14 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Checks for a valid crop state, then uses the existing rubber
+    band and mouse coordinates to crop the image on the screen. It then
+    deletes the rubber band and tells the program that it is no longer in
+    a crop state.
+Paramaters: event - the current mouse event
+ *****************************************************************************/
 void MainWindow::mouseReleaseEvent( QMouseEvent *event )
 {
     if(validCrop == true)

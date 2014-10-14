@@ -32,15 +32,6 @@ void DescriptionWindow::show()
 }
 
 /******************************************************************************
-Author: Kelsey Bellew
-Description: Destructor for the Description window
- *****************************************************************************/
-DescriptionWindow::~DescriptionWindow()
-{
-    delete ui;
-}
-
-/******************************************************************************
 Author: Caitlin Taggart
 Description: Stores the location, description, and date when the ok button
     gets pressed. Also emits the description changed signal, so that the
@@ -52,4 +43,13 @@ void DescriptionWindow::on_buttonBox_accepted()
     *description = ui->descriptionEdit->text();
     *date = ui->calendarWidget->selectedDate();
     emit descriptionChanged();
+}
+
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Destructor for the Description window
+ *****************************************************************************/
+DescriptionWindow::~DescriptionWindow()
+{
+    delete ui;
 }

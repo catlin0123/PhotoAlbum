@@ -1,8 +1,17 @@
+/******************************************************************************
+File: This file contains the implementation for the ResizeWindow class.
+ *****************************************************************************/
 #include "resizewindow.h"
 #include "ui_resizewindow.h"
 
-ResizeWindow::ResizeWindow(QImage *image, QLabel *imageLabel) ://, QWidget *parent) :
-    //QDialog(parent),
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Creates everything that is shown in the main window. Connects the
+    signals and slots as needed.
+Parameters: image - the current image passed in from the main window
+            imageLabel - the current image label passed in from the main window
+ *****************************************************************************/
+ResizeWindow::ResizeWindow(QImage *image, QLabel *imageLabel) :
     ui(new Ui::ResizeWindow)
 {
     ui->setupUi(this);
@@ -17,6 +26,11 @@ ResizeWindow::ResizeWindow(QImage *image, QLabel *imageLabel) ://, QWidget *pare
     setWindowTitle(tr("Resize Image"));
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Override of the show() function to set the text fields with the
+    current values of the image.
+ *****************************************************************************/
 void ResizeWindow::show()
 {
     QDialog::show();
@@ -24,21 +38,20 @@ void ResizeWindow::show()
     ui->heightSpinBox->setValue(resizeImage->height());
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Resizes an image.
+ *****************************************************************************/
 void ResizeWindow::resetImageSize()
 {
-//    resizeImage->width() = ui->widthSpinBox->value();
-//    resizeImage->height() = ui->heightSpinBox->value();
-
-//    QImage temp = resizeImage->scaled(ui->widthSpinBox->value(), ui->heightSpinBox->value());
-//    resizeImageLabel->setPixmap((QPixmap::fromImage(temp)));
+    //set the size of the image label
     resizeImageLabel->setFixedSize(ui->widthSpinBox->value(), ui->heightSpinBox->value());
-
-    //            ->scaled(ui->widthSpinBox->value(), ui->heightSpinBox->value())));
-
-//    delete ui; //is this. okay. is this okay.
 }
 
-
+/******************************************************************************
+Author: Kelsey Bellew
+Description: The descructor for the resize window class.
+ *****************************************************************************/
 ResizeWindow::~ResizeWindow()
 {
     delete ui;

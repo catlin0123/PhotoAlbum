@@ -1,6 +1,16 @@
+/******************************************************************************
+File: This file contains the implementation for the pictureedits class.
+ *****************************************************************************/
 #include "pictureedits.h"
 #include "ui_pictureedits.h"
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Creates everything that is shown in the main window. Connects the
+    signals and slots as needed.
+Parameters: image - the current image passed in from the main window
+            imageLabel - the current image label passed in from the main window
+ *****************************************************************************/
 pictureedits::pictureedits(QImage *image, QLabel *imageLabel) : ui(new Ui::pictureedits)
 {
     ui->setupUi(this);
@@ -12,6 +22,11 @@ pictureedits::pictureedits(QImage *image, QLabel *imageLabel) : ui(new Ui::pictu
     setWindowTitle(tr("Balance"));
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: Connects the slots that are needed for this class. This
+    includes brighten, contrast, edge, gamma, negate, sharpen, and smooth.
+ *****************************************************************************/
 void pictureedits::createActions()
 {
     connect(ui->brightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(brighten(int)));
@@ -23,7 +38,11 @@ void pictureedits::createActions()
     connect(ui->smoothSpinBox, SIGNAL(valueChanged(int)), this, SLOT(smooth(int)));
 }
 
-//this is wrong somehow.
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Brightens or darkens an image, depending on the given value.
+Paramaters: i - the current value of the associated widget
+ *****************************************************************************/
 void pictureedits::brighten(int i)
 {
     if(picImage->isNull())
@@ -60,6 +79,11 @@ void pictureedits::brighten(int i)
        picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Applies contrast to an image.
+Paramaters: i - the current value of the associated widget
+ *****************************************************************************/
 void pictureedits::contrast(int i)
 {
     if(picImage->isNull())
@@ -93,6 +117,10 @@ void pictureedits::contrast(int i)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Applies edge to an image.
+ *****************************************************************************/
 void pictureedits::edge()
 {
     if(picImage->isNull())
@@ -116,10 +144,17 @@ void pictureedits::edge()
         }
     }
 
+    *picImage = edgeImage;
+
     // store image in label's pixmap
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Applies gamma to an image.
+Paramaters: i - the current value of the associated widget
+ *****************************************************************************/
 void pictureedits::gamma(int i)
 {
     if(picImage->isNull())
@@ -151,6 +186,10 @@ void pictureedits::gamma(int i)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Negates an image.
+ *****************************************************************************/
 void pictureedits::negate()
 {
     if(picImage->isNull())
@@ -169,6 +208,11 @@ void pictureedits::negate()
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Sharpens an image.
+Paramaters: i - the current value of the associated widget
+ *****************************************************************************/
 void pictureedits::sharpen(int i)
 {
     if(picImage->isNull())
@@ -222,6 +266,11 @@ void pictureedits::sharpen(int i)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: John M. Weiss, Ph.D., edited by Kelsey Bellew
+Description: Smooths an image.
+Paramaters: i - the current value of the associated widget
+ *****************************************************************************/
 void pictureedits::smooth(int i)
 {
     if(picImage->isNull())
@@ -262,6 +311,10 @@ void pictureedits::smooth(int i)
     picImageLabel->setPixmap(QPixmap::fromImage(*picImage));
 }
 
+/******************************************************************************
+Author: Kelsey Bellew
+Description: The descructor for the picture edits class.
+ *****************************************************************************/
 pictureedits::~pictureedits()
 {
     delete ui;

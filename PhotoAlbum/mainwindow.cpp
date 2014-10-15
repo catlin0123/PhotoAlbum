@@ -552,7 +552,7 @@ Description: Moves the photo backward in the album. Updates enables as needed.
 void MainWindow::moveBackward()
 {
     //check that we don't step off the end of the vector
-    if ((currentPicture - 1) >= 0 && album.size() != 0)
+    if (currentPicture != 0  && album.size() != 0)
     {
         Photo temp = album[currentPicture];
         album[currentPicture] = album[currentPicture - 1];
@@ -787,7 +787,6 @@ void MainWindow::createToolBars()
     editToolBar = addToolBar(tr("Edit"));
     editToolBar->addAction(addPhotoAct);
     editToolBar->addAction(deletePhotoAct);
-    //editToolBar->addAction(editDescriptionAct);
     editToolBar->addSeparator();
     editToolBar->addAction(previousPhotoAct);
     editToolBar->addAction(nextPhotoAct);
@@ -1054,6 +1053,56 @@ void MainWindow::setDescription()
         str += "Date: " + photo.Date.toString("MMMM d, yyyy");
         descriptionLabel->setText(str);
     }
+}
+
+/******************************************************************************
+Author: Caitlin Taggart and Kelsey Bellew
+Description: Opens an xml file. Made to be opened from the command line and
+    passed in to be opened on startup.
+Parameters: filename - the name of the file to open.
+ *****************************************************************************/
+void MainWindow::openFile(QString filename)
+{
+    newFile = false;
+
+    QFile file;
+    file.setFileName(filename);
+
+    //parse the file
+    Parser parse;
+    currentPicture = 0;
+    album = parse.GetPhotoAlbums(&file);
+
+    //set the current image and set enables as needed
+    if (album.size() != 0)
+    {
+        image = QImage(album[0].FileName);
+        imageLabel->setPixmap(QPixmap::fromImage(image));
+        imageLabel->resize(image.width(), image.height());
+        enableImageEdits(true);
+        deletePhotoAct->setEnabled(true);
+        editDescriptionAct->setEnabled(true);
+    }
+    else
+    {
+        enableImageEdits(false);
+        deletePhotoAct->setEnabled(false);
+        editDescriptionAct->setEnabled(false);
+    }
+    if (image.isNull())
+    {
+        QMessageBox::information(this, tr("Image Viewer"), tr("Cannot load %1.").arg(filename));
+        return;
+    }
+    imageLabel->setPixmap(QPixmap::fromImage(image));
+    scaleFactor = 1.0;
+    updateActions();
+
+    //update enabled as needed
+    updateMoveEnables();
+    setDescription();
+    saveAct->setEnabled(false);
+    saveAsAct->setEnabled(false);
 }
 
 /******************************************************************************

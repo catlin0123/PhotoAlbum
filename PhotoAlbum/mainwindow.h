@@ -51,7 +51,7 @@ public:
     void mousePressEvent( QMouseEvent *event );
     void mouseMoveEvent( QMouseEvent *event );
     void mouseReleaseEvent( QMouseEvent *event );
-//    void keyPressEvent( QKeyEvent *event );
+    void openFile(QString filename);
 
 private slots:
     void newAlbum();
@@ -59,6 +59,7 @@ private slots:
     void save();
     void saveAs();
     void close();
+
     void updateDescription();
     void addPhoto();
     void deletePhoto();
@@ -68,12 +69,9 @@ private slots:
     void moveForward();
     void moveBackward();
 
-//    void zoomIn();
-//    void zoomOut();
-//    void normalSize();
-//    void fitToWindow();
-
     void about();
+    void usage();
+
     void balance();
     void rotate();
     void openResize();
@@ -117,12 +115,9 @@ private:
     QAction *moveForwardAct;
     QAction *moveBackwardAct;
 
-//    QAction *zoomInAct;
-//    QAction *zoomOutAct;
-//    QAction *normalSizeAct;
-//    QAction *fitToWindowAct;
-
     QAction *aboutAct;
+    QAction *usageAct;
+
     QAction *balanceAct;
     QAction *rotateAct;
     QAction *resizeAct;
@@ -153,7 +148,7 @@ private:
     bool pictureChanged;
     bool albumChanged;
     bool newFile;
-    int currentPicture;
+    unsigned int currentPicture;
     QString filename;
     vector<Photo> album;
 };

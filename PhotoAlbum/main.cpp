@@ -20,6 +20,9 @@ Program Information
 
         You can save photo albums, create new photo albums, and open photo
         albums.
+
+        The extra image processing functions are smooth, sharpen, negate,
+        gamma, and edge. They are all within the Edit Menu.
     Compiling Instructions:
  *****************************************************************************/
 #include "mainwindow.h"
@@ -32,6 +35,24 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
+
+    //there was an xml to start the program
+    if (argc == 2)
+    {
+        //open the file on the command line
+        QString string = argv[1];
+
+        //check to see if it actually was an xml
+        QString xml = string.mid(string.length()-4, 4);
+        xml.toLower();
+
+        //open the file if it was
+        if (xml == ".xml")
+        {
+            w.openFile(string);
+        }
+        //just allow the user to use the program otherwise.
+    }
 
     return a.exec();
 }

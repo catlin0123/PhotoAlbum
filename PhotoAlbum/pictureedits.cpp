@@ -13,6 +13,7 @@ Parameters: image - the current image passed in from the main window
  *****************************************************************************/
 pictureedits::pictureedits(QImage *image, QLabel *imageLabel) : ui(new Ui::pictureedits)
 {
+    brightenPrevVal = 0;
     ui->setupUi(this);
 
     picImage = image;
@@ -30,10 +31,8 @@ Description: Connects the slots that are needed for this class. This
 void pictureedits::createActions()
 {
     connect(ui->brightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(brighten(int)));
-//    connect(ui->contrastSlider, SIGNAL(valueChanged(int)), this, SLOT(contrast(int)));
     connect(ui->contrastButton, SIGNAL(clicked()), this, SLOT(contrast()));
     connect(ui->edgeButton, SIGNAL(clicked()), this, SLOT(edge()));
-//    connect(ui->gammaSlider, SIGNAL(valueChanged(int)), this, SLOT(gamma(int)));
     connect(ui->gammaButton, SIGNAL(clicked()), this, SLOT(gamma()));
     connect(ui->radioButton, SIGNAL(clicked()), this, SLOT(negate()));
     connect(ui->sharpenButton, SIGNAL(clicked()), this, SLOT(sharpen()));
@@ -93,11 +92,6 @@ void pictureedits::contrast()
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
-
-//    double val;
-//    if(contrastPrevVal > i) val = 1/2; //so. that wasn't right.
-//    if(contrastPrevVal < i) val = 2;
-//    contrastPrevVal = i;
 
     int contrastVal = 2;
 
@@ -166,11 +160,6 @@ void pictureedits::gamma()
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
-
-//    double val;
-//    if(gammaPrevVal > i) val = 1.5;
-//    if(gammaPrevVal < i) val = 2/3; //that also is not right. at. all.
-//    gammaPrevVal = i;
 
     // alter image gamma
         double gamma = 1.5;
@@ -289,11 +278,6 @@ void pictureedits::smooth()
         qDebug() << "image does not exist- you should do a check for this, srsly";// << fileName;
         exit(-2);
     }
-
-//    if(i==0) i = 10;
-//    i = i/10;
-
-//    i = 1;
 
     int val = ui->smoothSpinBox->value();
     if(val == 0) return;

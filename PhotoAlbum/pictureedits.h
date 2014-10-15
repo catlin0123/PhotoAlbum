@@ -45,23 +45,10 @@ private:
 
     void createActions();
 
-//    QAction *brightenAct;
-//    QAction *contrastAct;
-//    QAction *edgeAct;
-//    QAction *gammaAct;
-//    QAction *negateAct;
-//    QAction *rotateAct;
-//    QAction *sharpenAct;
-//    QAction *smoothAct;
-
     QLabel *picImageLabel;
     QImage *picImage;
 
-    int brightenPrevVal = 0;
-//    int gammaPrevVal = 0;
-//    int contrastPrevVal = 0;
-//    int sharpenPrevVal = 0;
-//    int smoothPrevVal = 0;
+    int brightenPrevVal;
 
 };
 
